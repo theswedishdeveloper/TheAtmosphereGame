@@ -1,5 +1,5 @@
 local green = {0, 1, 0, 1}
-local gray = {128, 128, 128, 1}
+local gray = {80, 80, 80, 1}
 local background
 local background_y
 local background_y_2
@@ -88,11 +88,11 @@ function love.update(dt)
         end
     end
     -- If player gets outside the screen on the right side, sent player to left side.
-    if playerX > love.graphics.getWidth() then
+    if playerX >= love.graphics.getWidth() then
         playerX = -playerSize + playerOutSideOffset
     end
     -- If player gets outside the screen on the left side, sent player to right side.
-    if playerX < -playerSize - playerOutSideOffset then
+    if playerX <= -playerSize - playerOutSideOffset then
         playerX = love.graphics.getWidth()
     end
     -- check if have spawned required amount of obstacles
