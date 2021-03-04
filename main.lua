@@ -3,20 +3,20 @@ local gray = {128, 128, 128, 1}
 local background
 local background_y
 local background_y_2
-local fallSpeed = 15
+local fallSpeed = 12
 local score = 0
 local playerX
 local playerY
 local playerSize = 30
-local moveSpeed = 10
-local playerVelocity = 3
+local moveSpeed = 8
+local playerVelocity = 2
 local playerOutSideOffset = 4
 local obstacles = 10 -- Must not be too big and freezes the game
 local obstaclePositions = {}
 local obstacleMaxSpeed = 5
 local obstacleMinSpeed = 2
-local obstacleMaxSize = 30
-local obstacleMinSize = 20
+local obstacleMaxSize = 32
+local obstacleMinSize = 15
 local gameOver = false
 local blinked = false
 
@@ -55,22 +55,20 @@ function love.draw()
         love.graphics.setColor(1, 1, 1, a)
         blinked = true
     end
-    
+
 end
 
 function love.update(dt)
-
     -- If the game is over, return.
     if (gameOver) then return false end
 
     -- This piece of code handle the smooth background scrolling behavior.
-    
     background_y = background_y + fallSpeed
     background_y_2 = background_y_2 + fallSpeed
 
     if (background_y >= background:getHeight()) then background_y = 0 end
     if (background_y_2 >= 0) then background_y_2 = -background:getHeight() end
-    
+
     -- Add 1 to the score count
     score = score + 1
 
@@ -84,7 +82,11 @@ function love.update(dt)
     -- If hold isDown key, move player down
     if love.keyboard.isDown("down") then playerY = playerY + moveSpeed end
     -- If hold isDown key, move player up
-    if love.keyboard.isDown("up") then if(playerY+playerSize/2 > 0) then playerY = playerY - moveSpeed end end
+    if love.keyboard.isDown("up") then
+        if (playerY + playerSize / 2 > 0) then
+            playerY = playerY - moveSpeed
+        end
+    end
     -- If player gets outside the screen on the right side, sent player to left side.
     if playerX > love.graphics.getWidth() then
         playerX = -playerSize + playerOutSideOffset
@@ -142,7 +144,7 @@ function love.update(dt)
         end
     end
 
-    --Add some velocity to the player
+    -- Add some velocity to the player
     playerY = playerY + playerVelocity
 
 end
