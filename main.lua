@@ -1,13 +1,3 @@
--- function love.draw()
--- draw background
---  love.graphics.setBackgroundColor(backgroundColor[0], 
--- backgroundColor[1], backgroundColor[2], backgroundColor[3])
--- draw plattform
--- love.graphics.rectangle("fill", 0, 
--- love.graphics.getHeight() - 50, love.graphics.getWidth(), 50)
--- draw player
--- love.graphics.rectangle("fill", playerX, playerY, 30, 30)
--- end
 local green = {0, 1, 0, 1}
 local background;
 local background_y
@@ -49,6 +39,6 @@ background_y_2 = background_y_2 - fallSpeed
   --Add 1 to score
   score = score + 1
 
-  
+
 end
 
