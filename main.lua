@@ -1,8 +1,8 @@
-local green = {0, 1, 0, 1}
-local gray = {80, 80, 80, 1}
+local greenColor = {0, 1, 0, 1}
+local grayColor = {80, 80, 80, 1}
 local background
-local background_y
-local background_y_2
+local backgroundY
+local background2Y
 local fallSpeed = 12
 local score = 0
 local playerX
@@ -23,22 +23,26 @@ local blinked = false
 function love.load()
     print("Game loading...")
     background = love.graphics.newImage("assets/sky.jpg")
-    background_y = 0
-    background_y_2 = -background:getHeight()
+    backgroundY = 0
+    background2Y = -background:getHeight()
     playerX = love.graphics.getWidth() / 2 - playerSize / 2
     playerY = 100
     love.graphics.setDefaultFilter("nearest", "nearest")
     love.window.setTitle("The Atmosphere Game")
     print("Game successfully loaded!")
+    print("Have Fun!")
 end
 
 function love.draw()
+    
+    local Font = love.graphics.newFont("assets/OpenSans-Bold.ttf", 24)
+    love.graphics.setFont(Font)
     -- Draw the background
-    love.graphics.draw(background, 0, background_y)
-    love.graphics.draw(background, 0, background_y_2)
+    love.graphics.draw(background, 0, backgroundY)
+    love.graphics.draw(background, 0, background2Y)
     -- Draw your score on the screen
-    love.graphics.print({green, ("Your Score: " .. score)}, 30, 30)
-    love.graphics.setColor(gray)
+    love.graphics.print({greenColor, ("Your Score: " .. score)}, 30, 30)
+    love.graphics.setColor(grayColor)
     -- Draw obstacles
     for i = 1, #obstaclePositions do
         love.graphics.circle("fill", obstaclePositions[i][1],
@@ -46,14 +50,18 @@ function love.draw()
     end
     love.graphics.setColor(255, 255, 255) -- reset colours
     -- Draw player
-    love.graphics.setColor(green)
+    love.graphics.setColor(greenColor)
     love.graphics.circle("fill", playerX, playerY, playerSize, playerSize)
     love.graphics.setColor(255, 255, 255) -- reset colours
-
+    -- Draw blink effect if game over.
     if (gameOver and blinked == false) then
         local a = math.abs(math.cos(love.timer.getTime() * 2 % 2 * math.pi))
         love.graphics.setColor(1, 1, 1, a)
         blinked = true
+    end
+
+    if (gameOver) then
+        love.graphics.print({greenColor, ("PRESS R TO RESTART")}, 30, 100)
     end
 
 end
@@ -61,20 +69,15 @@ end
 function love.update(dt)
     -- If the game is over, return.
     if (gameOver) then return false end
-
     -- This piece of code handle the smooth background scrolling behavior.
-    background_y = background_y + fallSpeed
-    background_y_2 = background_y_2 + fallSpeed
-
-    if (background_y >= background:getHeight()) then background_y = 0 end
-    if (background_y_2 >= 0) then background_y_2 = -background:getHeight() end
-
+    backgroundY = backgroundY + fallSpeed
+    background2Y = background2Y + fallSpeed
+    if (backgroundY >= background:getHeight()) then backgroundY = 0 end
+    if (background2Y >= 0) then background2Y = -background:getHeight() end
     -- Add 1 to the score count
     score = score + 1
-
     -- If the player is located at the bottom of the screen give twice as fast points.
     if (playerY > love.graphics.getHeight() / 2) then score = score + 1 end
-
     -- If hold right key, move player right
     if love.keyboard.isDown("right") then playerX = playerX + moveSpeed end
     -- If hold left key, move player left
@@ -133,20 +136,19 @@ function love.update(dt)
     end
     -- Do collision check
     for ii = 1, #obstaclePositions do
-        if collision(playerX, playerY, playerSize, obstaclePositions[ii][1],
-                     obstaclePositions[ii][2], obstaclePositions[ii][3]) then
+        if checkCollision(playerX, playerY, playerSize,
+                          obstaclePositions[ii][1], obstaclePositions[ii][2],
+                          obstaclePositions[ii][3]) then
             gameOver = true
             -- play sound effect
-            src1 = love.audio.newSource("assets/explosion.mp3", "static")
-            src1:setVolume(1) -- 90% of ordinary volume
-            src1:setPitch(0.9) -- one octave lower
-            src1:play()
+            local src = love.audio.newSource("assets/explosion.mp3", "static")
+            src:setVolume(1)
+            src:setPitch(0.85)
+            src:play()
         end
     end
-
     -- Add some velocity to the player
     playerY = playerY + playerVelocity
-
 end
 
 function getNewObstacleYPosition()
@@ -167,10 +169,9 @@ function getNewObstaclePosition(obstacleSize)
     local newPos = 0
     -- The obstacles cannot collide, check so that there is no obstacles on the same X
     while newPos == 0 do
-        local newPos2 = math.random(obstacleSize,
-                                    love.graphics.getWidth() - obstacleSize)
+        local newPos2 = math.random(obstacleSize / 2,
+                                    love.graphics.getWidth() - obstacleSize / 2)
         local foundObstacleInThatRange = false
-
         for ii = 1, #obstaclePositions do
             if newPos2 > obstaclePositions[ii][1] - obstacleSize and newPos2 <
                 obstaclePositions[ii][1] + obstacleSize then
@@ -182,8 +183,8 @@ function getNewObstaclePosition(obstacleSize)
     return newPos
 end
 
-function collision(playerX, playerY, playerSize, obstacleX, obstacleY,
-                   obstacleSize)
+function checkCollision(playerX, playerY, playerSize, obstacleX, obstacleY,
+                        obstacleSize)
     local distance = math.sqrt((math.abs(playerX - obstacleX) ^ 2 +
                                    math.abs(playerY - obstacleY) ^ 2))
     if (distance - obstacleSize <= playerSize) then return true end
@@ -195,3 +196,4 @@ function love.keypressed(key)
     -- Restart game if press "R"
     if key == "r" then love.event.quit("restart") end
 end
+
