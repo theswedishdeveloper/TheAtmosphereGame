@@ -1,5 +1,5 @@
 local greenColor = {0, 1, 0, 1}
-local grayColor = {80, 80, 80, 1}
+local grayColor = {50, 50, 50, 1}
 local background
 local backgroundY
 local background2Y
@@ -15,8 +15,8 @@ local obstacles = 10 -- Must not be too big and freezes the game
 local obstaclePositions = {}
 local obstacleMaxSpeed = 5
 local obstacleMinSpeed = 2
-local obstacleMaxSize = 32
-local obstacleMinSize = 15
+local obstacleMaxSize = 30
+local obstacleMinSize = 10
 local gameOver = false
 local blinked = false
 
@@ -34,7 +34,7 @@ function love.load()
 end
 
 function love.draw()
-    
+
     local Font = love.graphics.newFont("assets/OpenSans-Bold.ttf", 24)
     love.graphics.setFont(Font)
     -- Draw the background
@@ -66,6 +66,7 @@ function love.draw()
 
 end
 
+--Update function
 function love.update(dt)
     -- If the game is over, return.
     if (gameOver) then return false end
