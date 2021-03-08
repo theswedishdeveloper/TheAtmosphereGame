@@ -4,10 +4,10 @@ The game is about falling into the atmosphere and trying to watch out for the ro
 
 TIP: Be at the bottom of the screen because then you get twice as fast points.
 
+
 TODO
 - Change character design
 - Add some music and sound effects
 
-Author: Benjamin Ojanne
 
-Created: 2021
+Author: Benjamin Ojanne
