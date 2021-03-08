@@ -6,6 +6,7 @@ TIP: Be at the bottom of the screen because then you get twice as fast points.
 
 TODO
 - Change character design
+- Add some music and sound effects
 
 Author: Benjamin Ojanne
 Created: 2021
