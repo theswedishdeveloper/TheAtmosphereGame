@@ -5,16 +5,19 @@ The game is about trying to beware of rocks on the way down to earth through the
 
 `How To Play:`
 
-`↑ Move player Up`
-`← Move player Left`
-`→ Move player Right`
-`↓ Move player Down`
+↑ Move player Up
+← Move player Left
+→ Move player Right
+↓ Move player Down
+
 
 
 `TIP:` Be at the bottom of the screen to get twice as fast points.
 
 
+
 `TODO:`
+
 ☑ Add player
 
 ☑ Add obstacles
