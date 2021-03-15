@@ -1,8 +1,8 @@
-local greenColor = {0, 1, 0, 1}
-local grayColor = {50, 50, 50, 1}
-local background
+local greenColorRGB = {0, 1, 0, 1}
+local grayColorRGB = {50, 50, 50, 1}
+local backgroundImage
 local backgroundY
-local background2Y
+local backgroundY2
 local fallSpeed = 12
 local score = 0
 local playerX
@@ -22,9 +22,9 @@ local blinked = false
 
 function love.load()
     print("Game loading...")
-    background = love.graphics.newImage("assets/sky.jpg")
+    backgroundImage = love.graphics.newImage("assets/sky.jpg")
     backgroundY = 0
-    background2Y = -background:getHeight()
+    backgroundY2 = -backgroundImage:getHeight()
     playerX = love.graphics.getWidth() / 2 - playerSize / 2
     playerY = 100
     love.graphics.setDefaultFilter("nearest", "nearest")
@@ -38,11 +38,11 @@ function love.draw()
     local Font = love.graphics.newFont("assets/OpenSans-Bold.ttf", 24)
     love.graphics.setFont(Font)
     -- Draw the background
-    love.graphics.draw(background, 0, backgroundY)
-    love.graphics.draw(background, 0, background2Y)
+    love.graphics.draw(backgroundImage, 0, backgroundY)
+    love.graphics.draw(backgroundImage, 0, backgroundY2)
     -- Draw your score on the screen
-    love.graphics.print({greenColor, ("Your Score: " .. score)}, 30, 30)
-    love.graphics.setColor(grayColor)
+    love.graphics.print({greenColorRGB, ("Your Score: " .. score)}, 30, 30)
+    love.graphics.setColor(grayColorRGB)
     -- Draw obstacles
     for i = 1, #obstaclePositions do
         love.graphics.circle("fill", obstaclePositions[i][1],
@@ -50,7 +50,7 @@ function love.draw()
     end
     love.graphics.setColor(255, 255, 255) -- reset colours
     -- Draw player
-    love.graphics.setColor(greenColor)
+    love.graphics.setColor(greenColorRGB)
     love.graphics.circle("fill", playerX, playerY, playerSize, playerSize)
     love.graphics.setColor(255, 255, 255) -- reset colours
     -- Draw blink effect if game over.
@@ -61,20 +61,20 @@ function love.draw()
     end
 
     if (gameOver) then
-        love.graphics.print({greenColor, ("PRESS R TO RESTART")}, 30, 100)
+        love.graphics.print({greenColorRGB, ("PRESS R TO RESTART")}, 30, 100)
     end
 
 end
 
---Update function
+-- Update function
 function love.update(dt)
     -- If the game is over, return.
     if (gameOver) then return false end
     -- This piece of code handle the smooth background scrolling behavior.
     backgroundY = backgroundY + fallSpeed
-    background2Y = background2Y + fallSpeed
-    if (backgroundY >= background:getHeight()) then backgroundY = 0 end
-    if (background2Y >= 0) then background2Y = -background:getHeight() end
+    backgroundY2 = backgroundY2 + fallSpeed
+    if (backgroundY >= backgroundImage:getHeight()) then backgroundY = 0 end
+    if (backgroundY2 >= 0) then backgroundY2 = -backgroundImage:getHeight() end
     -- Add 1 to the score count
     score = score + 1
     -- If the player is located at the bottom of the screen give twice as fast points.
@@ -113,6 +113,9 @@ function love.update(dt)
             local Y = getNewObstacleYPosition()
             obstaclePositions[i] = {position, Y, size, speed}
             i = i + 1
+
+            table.remove( obstaclePositions, i )
+
         end
     end
     -- Caluclate the obstacles new positions

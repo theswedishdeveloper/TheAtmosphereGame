@@ -1,13 +1,19 @@
-# The Atmosphere
+# The Atmosphere Game
 
-The game is about falling into the atmosphere and trying to watch out for the rocks on the way down. You should try to collect as many points as possible.
+The game is about trying to beware of rocks on the way down to earth through the atmosphere. Your job is to collect as many points as possible.
 
-TIP: Be at the bottom of the screen because then you get twice as fast points.
+`How To Play:`
+↑ Move player Up
+← Move player Left
+→ Move player Right
+↓ Move player Down
 
+`TIP:` Be at the bottom of the screen to get twice as fast points.
 
-TODO
-- Change character design
-- Add some music and sound effects
-
-
-//Benjamin Ojanne 2021
+`TODO:`
+- ☑ Add player
+- ☑ Add obstacles
+- ☑ Spawn obstacles at a random position
+- ☐ Change character designs
+- ☐ Add music & sound effects
+- ☐ Add Highscore
