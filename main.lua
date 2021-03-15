@@ -1,5 +1,5 @@
 require("options")
-require("utils")
+require "utils"
 obstaclePositions = {}
 local greenColorRGB = {0, 1, 0, 1}
 local redColorRGB = {255, 0, 0, 1}
@@ -15,7 +15,6 @@ local playerOutSideOffset = 4
 local isGameOver = false
 local isMusicPlaying = false
 local musicTrack = nil
-
 
 function love.load()
     print("The epic Atmosphere Game is loading...")

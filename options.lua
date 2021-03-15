@@ -9,4 +9,4 @@ fallSpeed = 12
 playerSize = 30
 moveSpeed = 8
 enableMusic = true
-musicVolume = 1 -- Between 0.0 and 1.0
+musicVolume = 0.8 -- Between 0.0 and 1.0
