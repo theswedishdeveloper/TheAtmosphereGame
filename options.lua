@@ -8,3 +8,5 @@ obstaclesCount = 10 -- DO NOT set too high!
 fallSpeed = 12
 playerSize = 30
 moveSpeed = 8
+enableMusic = true
+musicVolume = 1 -- Between 0.0 and 1.0

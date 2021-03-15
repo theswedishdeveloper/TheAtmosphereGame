@@ -13,6 +13,8 @@ local playerY
 local playerVelocity = 2
 local playerOutSideOffset = 4
 local isGameOver = false
+local isMusicPlaying = false
+local musicTrack = nil
 
 function love.load()
     print("The epic Atmosphere Game is loading...")
@@ -149,9 +151,21 @@ function love.update(dt)
             -- play sound effect
             local src = love.audio.newSource("assets/explosion.mp3", "static")
             src:setVolume(1)
-            src:setPitch(0.85)
+            src:setPitch(0.8)
             src:play()
+            -- Pause music track
+            musicTrack:pause()
         end
+    end
+
+    if (enableMusic and isMusicPlaying == false) then
+        -- Start music if not started
+        if (musicTrack == nil) then
+            musicTrack = love.audio.newSource("assets/music.mp3", "static")
+            musicTrack:setVolume(musicVolume)
+        end
+        musicTrack:play()
+        isMusicPlaying = true
     end
 
     -- Add some velocity to the player
