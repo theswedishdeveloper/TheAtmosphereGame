@@ -6,11 +6,8 @@ The game is about trying to beware of rocks on the way down to earth through the
 `How To Play:`
 
 `↑ Move player Up`
-
 `← Move player Left`
-
 `→ Move player Right`
-
 `↓ Move player Down`
 
 
@@ -19,8 +16,13 @@ The game is about trying to beware of rocks on the way down to earth through the
 
 `TODO:`
 ☑ Add player
+
 ☑ Add obstacles
+
 ☑ Spawn obstacles at a random position
+
 ☐ Change character designs
+
 ☐ Add music & sound effects
+
 ☐ Add Highscore
