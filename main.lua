@@ -1,23 +1,17 @@
+require("options")
+require("utils")
+obstaclePositions = {}
 local greenColorRGB = {0, 1, 0, 1}
 local redColorRGB = {255, 0, 0, 1}
 local grayColorRGB = {50, 50, 50, 1}
 local backgroundImage
 local backgroundY
 local backgroundY2
-local fallSpeed = 12
 local score = 0
 local playerX
 local playerY
-local playerSize = 30
-local moveSpeed = 8
 local playerVelocity = 2
 local playerOutSideOffset = 4
-local obstaclesCount = 10 -- Must not be too big and freezes the game
-local obstaclePositions = {}
-local obstacleMaxSpeed = 5
-local obstacleMinSpeed = 2
-local obstacleMaxSize = 30
-local obstacleMinSize = 10
 local isGameOver = false
 
 function love.load()
@@ -43,7 +37,9 @@ function love.draw()
     love.graphics.draw(backgroundImage, 0, backgroundY)
     love.graphics.draw(backgroundImage, 0, backgroundY2)
     -- Draw your score on the screen
-    love.graphics.print({grayColorRGB, ("Score: "), greenColorRGB, (" " .. score)}, 50, 50)
+    love.graphics.print({
+        grayColorRGB, ("Score: "), greenColorRGB, (" " .. score)
+    }, 50, 50)
     love.graphics.setColor(grayColorRGB)
     -- Draw obstacles
     for i = 1, #obstaclePositions do
@@ -64,8 +60,6 @@ function love.draw()
     end
 
 end
-
-function resetScreenColors() love.graphics.setColor(255, 255, 255) end
 
 -- Update function
 function love.update(dt)
@@ -165,51 +159,6 @@ function love.update(dt)
     -- Increase score count with 1
     score = score + 1
 
-end
-
-function getRandomObstacleYPosition()
-    return love.graphics.getHeight() +
-               math.random(love.graphics.getHeight(),
-                           love.graphics.getHeight() * 3)
-end
-
-function getRandomObstacleSpeed()
-    return math.random(obstacleMinSpeed, obstacleMaxSpeed)
-end
-
-function getRandomObstacleSize()
-    return math.random(obstacleMinSize, obstacleMaxSize)
-end
-
-function getNewObstaclePosition(obstacleSize)
-    local newPos = 0
-
-    -- Check that there is no other obstacles that has same X to prevent the obstacles from collidate with each other.
-    while newPos == 0 do
-        local newPos2 = math.random(obstacleSize / 2,
-                                    love.graphics.getWidth() - obstacleSize / 2)
-        local foundObstacleInThatRange = false
-        for ii = 1, #obstaclePositions do
-            if newPos2 > obstaclePositions[ii][1] - obstacleSize and newPos2 <
-                obstaclePositions[ii][1] + obstacleSize then
-                foundObstacleInThatRange = true
-            end
-        end
-        if (foundObstacleInThatRange == false) then newPos = newPos2 end
-    end
-
-    return newPos
-end
-
-function calculateDistance(playerX, playerY, playerSize, obstacleX, obstacleY,
-                           obstacleSize)
-    local distance = math.sqrt((math.abs(playerX - obstacleX) ^ 2 +
-                                   math.abs(playerY - obstacleY) ^ 2))
-    if (distance - obstacleSize <= playerSize) then
-        return true
-    else
-        return false
-    end
 end
 
 function love.keypressed(key)
