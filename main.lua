@@ -16,6 +16,7 @@ local isGameOver = false
 local isMusicPlaying = false
 local musicTrack = nil
 
+
 function love.load()
     print("The epic Atmosphere Game is loading...")
     backgroundImage = love.graphics.newImage("assets/sky.jpg")

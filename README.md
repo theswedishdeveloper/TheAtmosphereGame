@@ -28,8 +28,8 @@ The game is about trying to beware of rocks on the way down to earth through the
 
 ☑ Spawn obstacles at a random position
 
-☐ Change character designs
+☑ Add music & sound effects
 
-☐ Add music & sound effects
+☐ Change character designs
 
 ☐ Add Highscore
