@@ -1,6 +1,7 @@
 require("options")
-require "utils"
-obstaclePositions = {}
+require("utils")
+obstaclePositions = {} -- global variable
+obstacleDesigns = {} -- global variable
 local greenColorRGB = {0, 1, 0, 1}
 local redColorRGB = {255, 0, 0, 1}
 local grayColorRGB = {50, 50, 50, 1}
@@ -8,27 +9,38 @@ local backgroundImage
 local backgroundY
 local backgroundY2
 local score = 0
-local playerX
-local playerY
+local player = {}
 local playerVelocity = 2
 local playerOutSideOffset = 4
 local isGameOver = false
 local isMusicPlaying = false
 local musicTrack = nil
+local isGameLoaded = false
+local lookingLeft = false
 
 function love.load()
     print("The epic Atmosphere Game is loading...")
     backgroundImage = love.graphics.newImage("assets/sky.jpg")
     backgroundY = 0
     backgroundY2 = -backgroundImage:getHeight()
+    -- Get all obstacle images into an array
+    for i = 1, 4 do
+        obstacleDesigns[i] = {}
+        obstacleDesigns[i].img = love.graphics.newImage(
+                                     "assets/obstacles/obstacle" .. i .. ".png")
+        obstacleDesigns[i].width = obstacleDesigns[i].img:getWidth()
+        obstacleDesigns[i].height = obstacleDesigns[i].img:getHeight()
+    end
     -- Spawn in center of the screen
-    playerX = love.graphics.getWidth() / 2 - playerSize / 2
-    playerY = love.graphics.getHeight() / 2 - playerSize / 2
+    player.x = love.graphics.getWidth() / 2
+    player.y = love.graphics.getHeight() / 2
+    player.img = love.graphics.newImage("assets/player.png")
     love.graphics.setDefaultFilter("nearest", "nearest")
     love.window.setTitle("The Atmosphere Game")
     print("Game successfully loaded!")
     print("Have Fun!")
     print("Created by Benjamin Ojanne")
+    isGameLoaded = true
 end
 
 function love.draw()
@@ -45,29 +57,44 @@ function love.draw()
     love.graphics.setColor(grayColorRGB)
     -- Draw obstacles
     for i = 1, #obstaclePositions do
-        love.graphics.circle("fill", obstaclePositions[i][1],
-                             obstaclePositions[i][2], obstaclePositions[i][3])
+        local x = obstaclePositions[i].x
+        local y = obstaclePositions[i].y
+        local size = obstaclePositions[i].size
+        local design = obstaclePositions[i].design
+        local rotation = obstaclePositions[i].rotation
+        love.graphics.draw(obstacleDesigns[design].img, x, y, rotation,
+                           obstacleScaleFactor * size,
+                           obstacleScaleFactor * size,
+                           obstacleDesigns[design].width / 2,
+                           obstacleDesigns[design].height / 2)
     end
-    -- Reset colors
-    resetScreenColors()
-    -- Draw player
-    love.graphics.setColor(greenColorRGB)
-    love.graphics.circle("fill", playerX, playerY, playerSize, playerSize)
+
     -- Reset colors
     resetScreenColors()
 
     -- Show game over screen if needed.
     if (isGameOver) then
         love.graphics.print({redColorRGB, ("PRESS R TO RESTART")}, 50, 100)
+        return
     end
 
+    -- Draw player
+    local playerSize = playerScaleFactor
+    if (lookingLeft == false) then playerSize = playerSize * -1 end
+    love.graphics.draw(player.img, player.x, player.y, 0, playerSize,
+                       math.abs(playerSize), player.img:getWidth() / 2,
+                       player.img:getHeight() / 2)
+    -- Reset colors
+    resetScreenColors()
 end
 
 -- Update function
 function love.update(dt)
 
     -- If the game is over, return!
-    if (isGameOver) then return false end
+    if (isGameOver) then return end
+
+    if (isGameLoaded == false) then return end
 
     -- This handles the smooth background scrolling behavior.
     backgroundY = backgroundY + fallSpeed
@@ -76,32 +103,36 @@ function love.update(dt)
     if (backgroundY2 >= 0) then backgroundY2 = -backgroundImage:getHeight() end
 
     -- If the player is located at the bottom of the screen give twice as fast points.
-    if (playerY > love.graphics.getHeight() / 2) then score = score + 1 end
+    if (player.y > love.graphics.getHeight() / 2) then score = score + 1 end
 
     -- If hold right key, move player right
-    if love.keyboard.isDown("right") then playerX = playerX + moveSpeed end
+    if love.keyboard.isDown("right") then
+        player.x = player.x + moveSpeed
+        lookingLeft = false
+    end
 
     -- If hold left key, move player left
-    if love.keyboard.isDown("left") then playerX = playerX - moveSpeed end
+    if love.keyboard.isDown("left") then
+        player.x = player.x - moveSpeed
+        lookingLeft = true
+    end
 
     -- If hold isDown key, move player down
-    if love.keyboard.isDown("down") then playerY = playerY + moveSpeed end
+    if love.keyboard.isDown("down") then player.y = player.y + moveSpeed end
 
     -- If hold isDown key, move player up
     if love.keyboard.isDown("up") then
-        if (playerY + playerSize / 2 > 0) then
-            playerY = playerY - moveSpeed
-        end
+        if (player.y > 0) then player.y = player.y - moveSpeed end
     end
 
     -- If player gets outside of the screen on the right side then sent the player to left side.
-    if playerX >= love.graphics.getWidth() then
-        playerX = -playerSize + playerOutSideOffset
+    if player.x - playerOutSideOffset >= love.graphics.getWidth() then
+        player.x = 0
     end
 
     -- If player gets outside of the screen on the left side then sent the player to right side.
-    if playerX <= -playerSize - playerOutSideOffset then
-        playerX = love.graphics.getWidth()
+    if player.x + playerOutSideOffset <= 0 then
+        player.x = love.graphics.getWidth()
     end
 
     -- check if have spawned required amount of obstacles
@@ -112,40 +143,62 @@ function love.update(dt)
         while obstaclesSpawned <= obstaclesCount do
             local size = getRandomObstacleSize()
             local speed = getRandomObstacleSpeed()
-            local position = getNewObstaclePosition(size)
-            local Y = getRandomObstacleYPosition()
-            obstaclePositions[obstaclesSpawned] = {position, Y, size, speed}
+            local y = getRandomObstacleYPosition()
+            local design = getRandomObstacleDesign()
+            local rotation = getRandomObstacleRotation()
+            local x = getRandomObstacleXPosition(size)
+            obstaclePositions[obstaclesSpawned] = {}
+            obstaclePositions[obstaclesSpawned].x = x
+            obstaclePositions[obstaclesSpawned].y = y
+            obstaclePositions[obstaclesSpawned].size = size
+            obstaclePositions[obstaclesSpawned].speed = speed
+            obstaclePositions[obstaclesSpawned].design = design
+            obstaclePositions[obstaclesSpawned].rotation = rotation
             obstaclesSpawned = obstaclesSpawned + 1
         end
     end
 
     -- Move all obstacles
-    for ii = 1, #obstaclePositions do
-        obstaclePositions[ii][2] = obstaclePositions[ii][2] -
-                                       obstaclePositions[ii][4]
-        obstaclePositions[ii][2] = obstaclePositions[ii][2] -
-                                       obstaclePositions[ii][4]
+    for i = 1, #obstaclePositions do
+        obstaclePositions[i].y = obstaclePositions[i].y -
+                                     obstaclePositions[i].speed
+    end
+
+    -- Rotate all obstacles
+    for i = 1, #obstaclePositions do
+        local rotation = obstaclePositions[i].rotation
+        if (rotation + obstacleRotationSpeed >= 360) then rotation = 0 end
+        if (i % 2 == 0) then
+            obstaclePositions[i].rotation = rotation - obstacleRotationSpeed
+        else
+            obstaclePositions[i].rotation = rotation + obstacleRotationSpeed
+        end
     end
 
     -- Check if obstacles need to be respawned
     for ii = 1, #obstaclePositions do
-        local obstacleYPos = obstaclePositions[ii][2]
-        local obstacleSpeed = obstaclePositions[ii][3]
-        if (obstacleYPos < -2 * obstacleSpeed) then
+        local obstacleYPos = obstaclePositions[ii].y
+        if (obstacleYPos < -100) then
             -- Respawn obstacle
-            obstaclePositions[ii][4] = getRandomObstacleSpeed()
-            obstaclePositions[ii][3] = getRandomObstacleSize()
-            obstaclePositions[ii][1] = getNewObstaclePosition(
-                                           obstaclePositions[ii][3])
-            obstaclePositions[ii][2] = getRandomObstacleYPosition()
+            obstaclePositions[ii].speed = getRandomObstacleSpeed()
+            obstaclePositions[ii].size = getRandomObstacleSize()
+            obstaclePositions[ii].x = getRandomObstacleXPosition(
+                                          obstaclePositions[ii].size)
+            obstaclePositions[ii].y = getRandomObstacleYPosition()
+            obstaclePositions[ii].design = getRandomObstacleDesign()
+            obstaclePositions[ii].rotation = getRandomObstacleRotation()
         end
     end
 
     -- Check if the player has collided with a obstacles
-    for ii = 1, #obstaclePositions do
-        if calculateDistance(playerX, playerY, playerSize,
-                             obstaclePositions[ii][1], obstaclePositions[ii][2],
-                             obstaclePositions[ii][3]) then
+    for i = 1, #obstaclePositions do
+        if overlap(player.x, player.y,
+                   player.img:getWidth() * playerScaleFactor,
+                   player.img:getHeight() * playerScaleFactor,
+                   obstaclePositions[i].x, obstaclePositions[i].y,
+                   obstacleDesigns[obstaclePositions[i].design].width *
+                       obstacleScaleFactor, obstacleDesigns[obstaclePositions[i]
+                       .design].height * obstacleScaleFactor) then
             -- Game is over!
             isGameOver = true
             -- play sound effect
@@ -169,7 +222,7 @@ function love.update(dt)
     end
 
     -- Add some velocity to the player
-    playerY = playerY + playerVelocity
+    player.y = player.y + playerVelocity
     -- Increase score count with 1
     score = score + 1
 
@@ -177,8 +230,11 @@ end
 
 function love.keypressed(key)
     -- Exit the game if press "ESC"
-    if key == "escape" then love.event.quit() end
-    -- Restart the game if press "R"
-    if key == "r" then love.event.quit("restart") end
+    if key == "escape" then
+        love.event.quit()
+        -- Restart the game if press "R"
+    elseif key == "r" then
+        love.event.quit("restart")
+    end
 end
 

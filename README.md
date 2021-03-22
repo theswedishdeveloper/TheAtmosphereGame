@@ -30,6 +30,8 @@ The game is about trying to beware of rocks on the way down to earth through the
 
 ☑ Add music & sound effects
 
-☐ Change character designs
+☑ Change character designs
 
 ☐ Add Highscore
+
+☐ Add pause game feature
