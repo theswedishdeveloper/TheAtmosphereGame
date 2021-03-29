@@ -32,6 +32,8 @@ The game is about trying to beware of rocks on the way down to earth through the
 
 ☑ Change character designs
 
+☑ Add Game Menu
+
 ☐ Add Highscore
 
 ☐ Add pause game feature
