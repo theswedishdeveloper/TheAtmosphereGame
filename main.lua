@@ -16,7 +16,7 @@ local player = {}
 local playerVelocity = 2
 local playerOutSideOffset = 4
 local isGameOver = false
-local backgroundScaleFactor = 2
+local backgroundScaleFactor = 3
 local isMusicPlaying = false
 local musicTrack = nil
 local isGameLoaded = false
@@ -34,7 +34,7 @@ function love.load()
     love.window.setTitle("The Atmosphere Game")
     love.window.setFullscreen(fullScreen)
     -- Initialize background
-    backgroundImage = love.graphics.newImage("assets/sky.jpg")
+    backgroundImage = love.graphics.newImage("assets/photo-1518818419601-72c8673f5852.jfif")
     backgroundY = 0
     backgroundY2 = -backgroundImage:getHeight() * backgroundScaleFactor
     -- Get all obstacle images into an array
