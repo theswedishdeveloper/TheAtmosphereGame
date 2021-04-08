@@ -3,17 +3,17 @@ local buttonHeight = 80
 local buttonMargin = 32
 local scaleFactor = 0.5
 
-function setupGameMenu()
+function SETUP_GAME_MENU()
     table.insert(menuButtons,
-                 newButton("START GAME", function() START_GAME() end))
-    table.insert(menuButtons, newButton("SETTINGS", function()
+                 NEW_BUTTON("START GAME", function() START_GAME() end))
+    table.insert(menuButtons, NEW_BUTTON("SETTINGS", function()
         -- TODO
     end))
     table.insert(menuButtons,
-                 newButton("EXIT GAME", function() love.event.quit(0) end))
+                 NEW_BUTTON("EXIT GAME", function() love.event.quit(0) end))
 end
 
-function renderGameMenu()
+function RENDER_GAME_MENU()
 
     local windowWidth = love.graphics.getWidth()
     local windowHeight = love.graphics.getHeight()
@@ -39,28 +39,27 @@ function renderGameMenu()
 
         local buttonColor = {0.4, 0.4, 0.4, 1.0}
 
-        if (buttonHovered) then buttonColor = {0.8, 0.8, 0.8, 1.0} end
+        if (buttonHovered) then 
+            buttonColor = {0.8, 0.8, 0.8, 1.0}
+        end
 
         -- Get mouse click state
         button.lastClick = love.mouse.isDown(1)
 
-        -- If a button was clicked
+        -- Check if a button was clicked
         if (button.lastClick and not button.firstClick and buttonHovered) then
             button.func()
         end
 
         love.graphics.setColor(buttonColor)
-        love.graphics.rectangle("fill", buttonX, buttonY, buttonWidth,
-                                buttonHeight, 20, 20)
+        love.graphics.rectangle("fill", buttonX, buttonY, buttonWidth, buttonHeight, 20, 20)
 
         love.graphics.setColor(255, 255, 255, 1)
 
         local textWidth = FONT:getWidth(button.text)
         local textHeight = FONT:getHeight(button.text)
 
-        love.graphics.print(button.text, (windowWidth * scaleFactor) -
-                                (textWidth * scaleFactor),
-                            buttonY + (textHeight * scaleFactor ^ 2))
+        love.graphics.print(button.text, (windowWidth * scaleFactor) - (textWidth * scaleFactor), buttonY + (textHeight * scaleFactor ^ 2))
 
         cursorY = cursorY + (buttonHeight + buttonMargin)
 
@@ -68,6 +67,6 @@ function renderGameMenu()
 
 end
 
-function newButton(text, func)
+function NEW_BUTTON(text, func)
     return {text = text, func = func, firstClick = false, lastClick = false}
 end

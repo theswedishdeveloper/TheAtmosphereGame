@@ -23,7 +23,6 @@ local isGameLoaded = false
 local lookingLeft = false
 local showGameMenu = true
 
-
 function love.load()
 
     print("The epic Atmosphere game is loading...")
@@ -53,7 +52,12 @@ function love.load()
     player.img = love.graphics.newImage("assets/player.png")
 
     -- Setup game menu
-    setupGameMenu()
+    SETUP_GAME_MENU()
+
+    --Load music track
+    musicTrack = love.audio.newSource("assets/music.mp3", "static")
+    musicTrack:setVolume(musicVolume)
+    musicTrack:setLooping(true)
 
     print("Game successfully loaded!")
     print("Have Fun!")
@@ -97,7 +101,7 @@ function love.draw()
     resetScreenColors()
 
     -- Game is not started then show game menu
-    if (showGameMenu) then renderGameMenu() end
+    if (showGameMenu) then RENDER_GAME_MENU() end
 
     -- Show game over screen if game is over.
     if (isGameOver) then
@@ -133,8 +137,7 @@ function RESTART_GAME()
     -- Reset player position
     player.x = love.graphics.getWidth() / 2
     player.y = love.graphics.getHeight() / 4
-    -- Reset music by setting music track to nil
-    musicTrack = nil
+    -- Reset music by setting music track
     isMusicPlaying = false
     -- Destroy all obstacles
     for k, v in pairs(OBSTACLES) do OBSTACLES[k] = nil end
@@ -231,10 +234,6 @@ function love.update(dt)
 
     if (enableMusic and not isMusicPlaying) then
         -- Start music if not started
-        if (musicTrack == nil) then
-            musicTrack = love.audio.newSource("assets/music.mp3", "static")
-            musicTrack:setVolume(musicVolume)
-        end
         musicTrack:play()
         isMusicPlaying = true
     end
@@ -301,8 +300,8 @@ function love.update(dt)
                 src:setVolume(1)
                 src:setPitch(0.9)
                 src:play()
-                -- Pause music track
-                musicTrack:pause()
+                -- Stop music track
+                musicTrack:stop()
         end
     end
 

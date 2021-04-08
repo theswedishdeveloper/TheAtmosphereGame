@@ -3,7 +3,7 @@ function resetScreenColors() love.graphics.setColor(255, 255, 255) end
 function getRandomObstacleYPosition()
     return love.graphics.getHeight() +
                math.random(love.graphics.getHeight(),
-                           love.graphics.getHeight() * 4)
+                           love.graphics.getHeight() * 3)
 end
 
 function getRandomObstacleXPosition()
@@ -12,8 +12,9 @@ function getRandomObstacleXPosition()
     while newPos == 0 do
         local newPos2 = math.random(0, love.graphics.getWidth())
         local foundObstacleInThatRange = false
+        local obstacleApproximatelySize = 30
         for ii = 1, #OBSTACLES do
-            if newPos2 - 25 < OBSTACLES[ii].x and newPos2 + 25 > OBSTACLES[ii].x then
+            if newPos2 - obstacleApproximatelySize < OBSTACLES[ii].x and newPos2 + obstacleApproximatelySize > OBSTACLES[ii].x then
                 foundObstacleInThatRange = true
             end
         end
