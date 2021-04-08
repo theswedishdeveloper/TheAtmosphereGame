@@ -27,6 +27,8 @@ function love.load()
 
     print("The epic Atmosphere game is loading...")
 
+    --Hide mouse pointer on load
+    love.mouse.setVisible(false)
     -- Window options
     FONT = love.graphics.newFont("assets/space_font.otf", 45)
     FONT_BIG = love.graphics.newFont("assets/space_font.otf", 90)
@@ -62,6 +64,9 @@ function love.load()
     print("Game successfully loaded!")
     print("Have Fun!")
     print("Created by Benjamin Ojanne 2021")
+
+    --Show mouse pointer
+    love.mouse.setVisible(true)
 
     isGameLoaded = true
 
@@ -289,8 +294,8 @@ function love.update(dt)
                     player.img:getWidth() * playerScaleFactor / 2,
                     player.img:getHeight() * playerScaleFactor / 2,
                     OBSTACLES[i].x, OBSTACLES[i].y,
-                    OBSTACLES_APPERANCE[OBSTACLES[i].design].width * obstacleScaleFactor / 2, 
-                    OBSTACLES_APPERANCE[OBSTACLES[i].design].height * obstacleScaleFactor / 2) 
+                    OBSTACLES_APPERANCE[OBSTACLES[i].design].width * obstacleScaleFactor, 
+                    OBSTACLES_APPERANCE[OBSTACLES[i].design].height * obstacleScaleFactor) 
                 then
                 -- Game is over!
                 isGameOver = true
@@ -302,6 +307,8 @@ function love.update(dt)
                 src:play()
                 -- Stop music track
                 musicTrack:stop()
+                --Show mouse pointer again
+                love.mouse.setVisible(true)
         end
     end
 
@@ -319,6 +326,8 @@ end
 
 function START_GAME()
     RESTART_GAME()
+    --Hide mouse pointer
+    love.mouse.setVisible(false)
     isGameOver = false
     showGameMenu = false
 end
