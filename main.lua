@@ -12,6 +12,7 @@ local backgroundImage
 local backgroundY
 local backgroundY2
 local score = 0
+local highScore = 0
 local player = {}
 local playerGravity = 2
 local playerOutSideOffset = 4
@@ -83,8 +84,11 @@ function love.draw()
     love.graphics.draw(backgroundImage, 0, backgroundY2, 0,
                        backgroundScaleFactor, backgroundScaleFactor)
 
+    -- Draw your high score on the screen
+    love.graphics.print({grayColorRGB, ("HIGH SCORE: "), greenColorRGB, (" " .. highScore)}, 50, 20)
+
     -- Draw your score on the screen
-    love.graphics.print({grayColorRGB, ("SCORE: "), greenColorRGB, (" " .. score)}, love.graphics.getHeight() * (1 / 10), love.graphics.getWidth() * (1 / 15))
+    love.graphics.print({grayColorRGB, ("SCORE: "), greenColorRGB, (" " .. score)}, 50, 80)
 
     love.graphics.setColor(grayColorRGB)
 
@@ -308,7 +312,7 @@ function love.update(dt)
                 -- Stop music track
                 musicTrack:stop()
                 --Show mouse pointer again
-                love.mouse.setVisible(true)
+                love.mouse.setVisible(true) 
         end
     end
 
@@ -317,6 +321,14 @@ function love.update(dt)
         score = score + 2
     else
         score = score + 1
+    end
+
+    
+    if(isGameOver) then
+     --Check if we have reached a new high score!
+      if(highScore < score)then
+         highScore = score
+      end
     end
 
     -- Add gravity to the player
