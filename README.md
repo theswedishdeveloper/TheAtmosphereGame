@@ -1,21 +1,21 @@
 # The Atmosphere Game
 
-The game is about trying to beware of rocks on the way down to earth through the atmosphere. Your job is to collect as many points as possible.
+The game is about trying to beware of rocks on the way down to the earth through. Your job is to collect as many points as possible.
 
 
-`How To Play:`
+`How To Play: `
 
-↑ Move player Up
+Move player Up: ↑ 
 
-← Move player Left
+Move player Left: ← 
 
-→ Move player Right
+Move player Right: → 
 
-↓ Move player Down
+Move player Down: ↓ 
 
 
 
-`TIP:` Be at the bottom of the screen to get twice as fast points.
+`PRO TIP:` Try to be at the bottom of the screen to get twice as fast points.
 
 
 
@@ -34,6 +34,6 @@ The game is about trying to beware of rocks on the way down to earth through the
 
 ☑ Add Game Menu
 
-☑ Add Highscore
+☑ Add High score
 
-☐ Add pause game feature
+☑ Add pause game feature
