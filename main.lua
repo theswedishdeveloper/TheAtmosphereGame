@@ -23,6 +23,7 @@ local musicTrack = nil
 local isGameLoaded = false
 local lookingLeft = false
 local showGameMenu = true
+local gamePaused = false
 
 function love.load()
 
@@ -116,15 +117,13 @@ function love.draw()
     if (isGameOver) then
         love.graphics.setFont(FONT_BIG)
         local gameOverText = " GAME OVER!"
-        love.graphics.print({redColorRGB, (gameOverText)}, love.graphics
-                                .getWidth() / 2 -
+        love.graphics.print({redColorRGB, (gameOverText)}, love.graphics.getWidth() / 2 -
                                 FONT_BIG:getWidth(gameOverText) / 2,
                             love.graphics.getHeight() / 7)
         return
     end
 
     if (showGameMenu) then return end
-
 
     -- Draw player
     local playerSize = playerScaleFactor
@@ -139,6 +138,15 @@ function love.draw()
 
     -- Reset colors
     resetScreenColors()
+
+        --Draw "Game Paused" on the screen if game is paused
+    if(gamePaused) then 
+        love.graphics.setFont(FONT_BIG)
+        love.graphics.print({grayColorRGB, "GAME PAUSED"}, love.graphics.getWidth() / 2 - FONT_BIG:getWidth("GAME PAUSED") / 2, 
+        love.graphics.getHeight() / 2 - FONT_BIG:getHeight("GAME PAUSED") / 2)
+        --Set font back to default
+        love.graphics.setFont(FONT)
+    end
 
 end
 
@@ -158,7 +166,7 @@ function love.update(dt)
 
     
     -- If the game is over or game is not loaded, return!
-    if (not isGameLoaded) then 
+    if (not isGameLoaded or gamePaused) then 
         return
     end
 
@@ -344,13 +352,41 @@ function START_GAME()
     showGameMenu = false
 end
 
+function resumeGame()
+    --Resume music
+    musicTrack:play()
+    gamePaused = false
+end
+
+function pauseGame()
+    --Resume music
+    musicTrack:pause()
+    gamePaused = true
+end
+
 function love.keypressed(key)
     -- Exit the game if press "ESC"
     if key == "escape" then
-        love.event.quit()
+        if(gamePaused) then
+            resumeGame()
+        else
+          love.event.quit()
+        end
         -- Restart the game if press "R"
     elseif key == "r" then
         love.event.quit("restart")
+    elseif key == "p" then
+      --Check if game is started
+      if(showGameMenu) then
+          return
+      end
+      --Pause/resume game
+      gamePaused = not gamePaused
+      if(gamePaused) then
+          pauseGame()
+      else
+         resumeGame()
+      end
     end
 end
 
