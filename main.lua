@@ -1,8 +1,8 @@
 require("options")
 require("utils")
 require("menu")
-obstaclePositions = {} -- global variable
-obstacleDesigns = {} -- global variable
+OBSTACLES = {} -- global variable
+OBSTACLES_APPERANCE = {} -- global variable
 FONT = nil
 FONT_BIG = nil
 local greenColorRGB = {0, 1, 0, 1}
@@ -13,7 +13,7 @@ local backgroundY
 local backgroundY2
 local score = 0
 local player = {}
-local playerVelocity = 2
+local playerGravity = 2
 local playerOutSideOffset = 4
 local isGameOver = false
 local backgroundScaleFactor = 2
@@ -23,9 +23,10 @@ local isGameLoaded = false
 local lookingLeft = false
 local showGameMenu = true
 
+
 function love.load()
 
-    print("The epic Atmosphere Game is loading...")
+    print("The epic Atmosphere game is loading...")
 
     -- Window options
     FONT = love.graphics.newFont("assets/space_font.otf", 45)
@@ -39,13 +40,14 @@ function love.load()
     backgroundY2 = -backgroundImage:getHeight() * backgroundScaleFactor
     -- Get all obstacle images into an array
     for i = 1, 4 do
-        obstacleDesigns[i] = {}
-        obstacleDesigns[i].img = love.graphics.newImage(
+        OBSTACLES_APPERANCE[i] = {}
+        OBSTACLES_APPERANCE[i].img = love.graphics.newImage(
                                      "assets/obstacles/obstacle" .. i .. ".png")
-        obstacleDesigns[i].width = obstacleDesigns[i].img:getWidth()
-        obstacleDesigns[i].height = obstacleDesigns[i].img:getHeight()
+        OBSTACLES_APPERANCE[i].width = OBSTACLES_APPERANCE[i].img:getWidth()
+        OBSTACLES_APPERANCE[i].height = OBSTACLES_APPERANCE[i].img:getHeight()
     end
 
+    -- Initialize player
     player.x = love.graphics.getWidth() / 2
     player.y = love.graphics.getHeight() / 4
     player.img = love.graphics.newImage("assets/player.png")
@@ -55,7 +57,7 @@ function love.load()
 
     print("Game successfully loaded!")
     print("Have Fun!")
-    print("Created by Benjamin Ojanne")
+    print("Created by Benjamin Ojanne 2021")
 
     isGameLoaded = true
 
@@ -68,37 +70,36 @@ function love.draw()
     -- Draw the background
     love.graphics.draw(backgroundImage, 0, backgroundY, 0,
                        backgroundScaleFactor, backgroundScaleFactor)
+
     love.graphics.draw(backgroundImage, 0, backgroundY2, 0,
                        backgroundScaleFactor, backgroundScaleFactor)
 
     -- Draw your score on the screen
-    love.graphics.print({
-        grayColorRGB, ("SCORE: "), greenColorRGB, (" " .. score)
-    }, love.graphics.getHeight() * (1 / 10), love.graphics.getWidth() * (1 / 15))
+    love.graphics.print({grayColorRGB, ("SCORE: "), greenColorRGB, (" " .. score)}, love.graphics.getHeight() * (1 / 10), love.graphics.getWidth() * (1 / 15))
 
     love.graphics.setColor(grayColorRGB)
 
     -- Draw obstacles
-    for i = 1, #obstaclePositions do
-        local x = obstaclePositions[i].x
-        local y = obstaclePositions[i].y
-        local size = obstaclePositions[i].size
-        local design = obstaclePositions[i].design
-        local rotation = obstaclePositions[i].rotation
-        love.graphics.draw(obstacleDesigns[design].img, x, y, rotation,
+    for i = 1, #OBSTACLES do
+        local x = OBSTACLES[i].x
+        local y = OBSTACLES[i].y
+        local size = OBSTACLES[i].size
+        local design = OBSTACLES[i].design
+        local rotation = OBSTACLES[i].rotation
+        love.graphics.draw(OBSTACLES_APPERANCE[design].img, x, y, rotation,
                            obstacleScaleFactor * size,
                            obstacleScaleFactor * size,
-                           obstacleDesigns[design].width / 2,
-                           obstacleDesigns[design].height / 2)
+                           OBSTACLES_APPERANCE[design].width / 2,
+                           OBSTACLES_APPERANCE[design].height / 2)
     end
 
     -- Reset colors
     resetScreenColors()
 
-    -- Game is not started, show menu and return.
+    -- Game is not started then show game menu
     if (showGameMenu) then renderGameMenu() end
 
-    -- Show game over screen if needed.
+    -- Show game over screen if game is over.
     if (isGameOver) then
         love.graphics.setFont(FONT_BIG)
         local gameOverText = " GAME OVER!"
@@ -111,10 +112,13 @@ function love.draw()
 
     if (showGameMenu) then return end
 
+
     -- Draw player
     local playerSize = playerScaleFactor
 
-    if (lookingLeft == false) then playerSize = playerSize * -1 end
+    if (not lookingLeft) then 
+        playerSize = playerSize * -1 
+    end
 
     love.graphics.draw(player.img, player.x, player.y, 0, playerSize,
                        math.abs(playerSize), player.img:getWidth() / 2,
@@ -125,7 +129,7 @@ function love.draw()
 
 end
 
-function resetGame()
+function RESTART_GAME()
     -- Reset player position
     player.x = love.graphics.getWidth() / 2
     player.y = love.graphics.getHeight() / 4
@@ -133,31 +137,33 @@ function resetGame()
     musicTrack = nil
     isMusicPlaying = false
     -- Destroy all obstacles
-    for k, v in pairs(obstaclePositions) do obstaclePositions[k] = nil end
+    for k, v in pairs(OBSTACLES) do OBSTACLES[k] = nil end
     -- Reset score
     score = 0
 end
 
--- Update function
 function love.update(dt)
 
-    -- If the game is over, return!
-    if (isGameOver) then return end
-
-    if (isGameLoaded == false) then return end
+    
+    -- If the game is over or game is not loaded, return!
+    if (not isGameLoaded) then 
+        return
+    end
 
     -- This handles the smooth background scrolling behavior.
     backgroundY = backgroundY + fallSpeed
     backgroundY2 = backgroundY2 + fallSpeed
+
     if (backgroundY >= backgroundImage:getHeight() * backgroundScaleFactor) then
         backgroundY = 0
     end
+
     if (backgroundY2 >= 0) then
         backgroundY2 = -backgroundImage:getHeight() * backgroundScaleFactor
     end
 
     -- check if have spawned required amount of obstacles
-    local obstaclesSpawned = #obstaclePositions
+    local obstaclesSpawned = #OBSTACLES
 
     -- Check if more obstacles need to be spawned
     if obstaclesSpawned < obstaclesCount then
@@ -168,50 +174,62 @@ function love.update(dt)
             local design = getRandomObstacleDesign()
             local rotation = getRandomObstacleRotation()
             local x = getRandomObstacleXPosition(size)
-            obstaclePositions[obstaclesSpawned] = {}
-            obstaclePositions[obstaclesSpawned].x = x
-            obstaclePositions[obstaclesSpawned].y = y
-            obstaclePositions[obstaclesSpawned].size = size
-            obstaclePositions[obstaclesSpawned].speed = speed
-            obstaclePositions[obstaclesSpawned].design = design
-            obstaclePositions[obstaclesSpawned].rotation = rotation
+            local direction = getRandomObstacleDirection()
+            local directionSpeed = getRandomObstacleDirectionSpeed()
+            OBSTACLES[obstaclesSpawned] = {}
+            OBSTACLES[obstaclesSpawned].x = x
+            OBSTACLES[obstaclesSpawned].y = y
+            OBSTACLES[obstaclesSpawned].size = size
+            OBSTACLES[obstaclesSpawned].speed = speed
+            OBSTACLES[obstaclesSpawned].design = design
+            OBSTACLES[obstaclesSpawned].rotation = rotation
+            OBSTACLES[obstaclesSpawned].direction = direction
+            OBSTACLES[obstaclesSpawned].directionSpeed = directionSpeed
             obstaclesSpawned = obstaclesSpawned + 1
         end
     end
 
     -- Move all obstacles
-    for i = 1, #obstaclePositions do
-        obstaclePositions[i].y = obstaclePositions[i].y -
-                                     obstaclePositions[i].speed
+    for i = 1, #OBSTACLES do
+        OBSTACLES[i].y = OBSTACLES[i].y - OBSTACLES[i].speed
+        if(OBSTACLES[i].direction == "right") then
+            OBSTACLES[i].x = OBSTACLES[i].x + OBSTACLES[i].directionSpeed 
+        else
+            OBSTACLES[i].x = OBSTACLES[i].x - OBSTACLES[i].directionSpeed 
+        end
     end
 
     -- Rotate all obstacles
-    for i = 1, #obstaclePositions do
-        local rotation = obstaclePositions[i].rotation
+    for i = 1, #OBSTACLES do
+        local rotation = OBSTACLES[i].rotation
         if (rotation + obstacleRotationSpeed >= 360) then rotation = 0 end
         if (i % 2 == 0) then
-            obstaclePositions[i].rotation = rotation - obstacleRotationSpeed
+            OBSTACLES[i].rotation = rotation - obstacleRotationSpeed
         else
-            obstaclePositions[i].rotation = rotation + obstacleRotationSpeed
+            OBSTACLES[i].rotation = rotation + obstacleRotationSpeed
         end
     end
 
     -- Check if obstacles need to be respawned
-    for ii = 1, #obstaclePositions do
-        local obstacleYPos = obstaclePositions[ii].y
+    for ii = 1, #OBSTACLES do
+        local obstacleYPos = OBSTACLES[ii].y
         if (obstacleYPos < -100) then
             -- Respawn obstacle
-            obstaclePositions[ii].speed = getRandomObstacleSpeed()
-            obstaclePositions[ii].size = getRandomObstacleSize()
-            obstaclePositions[ii].x = getRandomObstacleXPosition(
-                                          obstaclePositions[ii].size)
-            obstaclePositions[ii].y = getRandomObstacleYPosition()
-            obstaclePositions[ii].design = getRandomObstacleDesign()
-            obstaclePositions[ii].rotation = getRandomObstacleRotation()
+            OBSTACLES[ii].speed = getRandomObstacleSpeed()
+            OBSTACLES[ii].size = getRandomObstacleSize()
+            OBSTACLES[ii].x = getRandomObstacleXPosition()
+            OBSTACLES[ii].y = getRandomObstacleYPosition()
+            OBSTACLES[ii].design = getRandomObstacleDesign()
+            OBSTACLES[ii].rotation = getRandomObstacleRotation()
         end
     end
 
-    if (enableMusic and isMusicPlaying == false) then
+    -- If the game is over return
+    if (isGameOver) then 
+        return
+    end
+
+    if (enableMusic and not isMusicPlaying) then
         -- Start music if not started
         if (musicTrack == nil) then
             musicTrack = love.audio.newSource("assets/music.mp3", "static")
@@ -221,10 +239,22 @@ function love.update(dt)
         isMusicPlaying = true
     end
 
-    -- Game is not started, return.
-    if (showGameMenu) then return end
+    -- If some obstacle gets outside of the screen send them to the other side.
+    for i = 1, #OBSTACLES do
+            if(OBSTACLES[i].x < 0) then
+                  OBSTACLES[i].x = love.graphics.getWidth()
+                else if(OBSTACLES[i].x > love.graphics.getWidth()) then
+                 OBSTACLES[i].x = 0
+            end
+          end
+    end
 
-    -- If hold right key, move player right
+    -- Game is not started, return.
+    if (showGameMenu) then 
+        return 
+    end
+
+    -- If hold right key, move player to right
     if love.keyboard.isDown("right") then
         player.x = player.x + moveSpeed
         lookingLeft = false
@@ -253,26 +283,26 @@ function love.update(dt)
     if player.x + playerOutSideOffset <= 0 then
         player.x = love.graphics.getWidth()
     end
-
-    -- Check if the player has collided with a obstacles
-    for i = 1, #obstaclePositions do
-        if overlap(player.x, player.y,
-                   player.img:getWidth() * playerScaleFactor,
-                   player.img:getHeight() * playerScaleFactor,
-                   obstaclePositions[i].x, obstaclePositions[i].y,
-                   obstacleDesigns[obstaclePositions[i].design].width *
-                       obstacleScaleFactor, obstacleDesigns[obstaclePositions[i]
-                       .design].height * obstacleScaleFactor) then
-            -- Game is over!
-            isGameOver = true
-            showGameMenu = true
-            -- play sound effect
-            local src = love.audio.newSource("assets/explosion.mp3", "static")
-            src:setVolume(1)
-            src:setPitch(0.8)
-            src:play()
-            -- Pause music track
-            musicTrack:pause()
+       
+    -- Check if player has collided with some obstacle!
+    for i = 1, #OBSTACLES do
+          if overlap(player.x, player.y,
+                    player.img:getWidth() * playerScaleFactor / 2,
+                    player.img:getHeight() * playerScaleFactor / 2,
+                    OBSTACLES[i].x, OBSTACLES[i].y,
+                    OBSTACLES_APPERANCE[OBSTACLES[i].design].width * obstacleScaleFactor / 2, 
+                    OBSTACLES_APPERANCE[OBSTACLES[i].design].height * obstacleScaleFactor / 2) 
+                then
+                -- Game is over!
+                isGameOver = true
+                showGameMenu = true
+                -- play sound effect
+                local src = love.audio.newSource("assets/explosion.mp3", "static")
+                src:setVolume(1)
+                src:setPitch(0.9)
+                src:play()
+                -- Pause music track
+                musicTrack:pause()
         end
     end
 
@@ -283,13 +313,13 @@ function love.update(dt)
         score = score + 1
     end
 
-    -- Add some velocity to the player
-    player.y = player.y + playerVelocity
+    -- Add gravity to the player
+    player.y = player.y + playerGravity
 
 end
 
-function startGame()
-    if (isGameOver) then resetGame() end
+function START_GAME()
+    RESTART_GAME()
     isGameOver = false
     showGameMenu = false
 end

@@ -5,7 +5,7 @@ local scaleFactor = 0.5
 
 function setupGameMenu()
     table.insert(menuButtons,
-                 newButton("START GAME", function() startGame() end))
+                 newButton("START GAME", function() START_GAME() end))
     table.insert(menuButtons, newButton("SETTINGS", function()
         -- TODO
     end))
