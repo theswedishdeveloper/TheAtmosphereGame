@@ -1,23 +1,39 @@
+local SHOW_SETTINGS = false
+
 local menuButtons = {}
 local settingsButtons = {}
 local buttonHeight = 80
 local buttonMargin = 32
 local scaleFactor = 0.5
-local showSettings = false
 
 function SETUP_GAME_MENU()
 
     table.insert(menuButtons, NEW_BUTTON("START GAME", function() START_GAME() end))
     
     table.insert(menuButtons, NEW_BUTTON("SETTINGS", function() 
-        showSettings = not showSettings end))
+        SHOW_SETTINGS = not SHOW_SETTINGS end))
 
     table.insert(menuButtons, NEW_BUTTON("EXIT GAME", function() love.event.quit(0) end))
 
-    table.insert(settingsButtons, NEW_BUTTON("Music Enabled: TRUE", function() 
-
+    table.insert(settingsButtons, NEW_BUTTON("MUSIC:", function() 
+        PLAY_MUSIC = not PLAY_MUSIC
+    end))  
+    
+    table.insert(settingsButtons, NEW_BUTTON("DIFFICULTY:", function() 
+        if(DIFFICULTY == "EASY") then
+            DIFFICULTY = "NORMAL"
+        else if(DIFFICULTY == "NORMAL") then
+            DIFFICULTY = "HARD"
+        else
+            DIFFICULTY = "EASY"
+        end
+      end
     end))
 
+    table.insert(settingsButtons, NEW_BUTTON("BACK TO MENU", function() 
+        SHOW_SETTINGS = false
+    end))  
+    
 end
 
 function RENDER_GAME_MENU()
@@ -28,7 +44,7 @@ function RENDER_GAME_MENU()
     local buttonsPanelHeight = #menuButtons * (buttonHeight + buttonMargin)
     local cursorY = 0
 
-    if(not showSettings) then
+    if(not SHOW_SETTINGS) then
         
      for i, button in ipairs(menuButtons) do
 
@@ -77,7 +93,20 @@ function RENDER_GAME_MENU()
    else 
 
 
+    local index = 0
+
     for i, button in ipairs(settingsButtons) do
+
+        if(index == 0) then
+            if(PLAY_MUSIC) then
+                button.text = "MUSIC: ENABLED"                 
+            else
+                button.text = "MUSIC: DISABLED"
+            end
+        else if(index == 1) then
+            button.text = "DIFFICULTY: "..DIFFICULTY          
+          end
+        end
 
         button.firstClick = button.lastClick
 
@@ -119,12 +148,17 @@ function RENDER_GAME_MENU()
 
         cursorY = cursorY + (buttonHeight + buttonMargin)
 
-    end
+        index = index + 1
 
-   end
+    end
+ end
+
+    -- Draw game creators name
+    local text = "Developed by Benjamin Ojanne"
+    love.graphics.print(text, 50, love.graphics.getHeight() - 80)
 
 end
 
 function NEW_BUTTON(text, func)
-    return {text = text, func = func, firstClick = false, lastClick = false}
+    return {text = text, func = func, firstClick = false, lastClick = true}
 end

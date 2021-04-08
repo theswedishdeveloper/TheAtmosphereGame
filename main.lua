@@ -32,8 +32,8 @@ function love.load()
     --Hide mouse pointer on load
     love.mouse.setVisible(false)
     -- Window options
-    FONT = love.graphics.newFont("assets/space_font.otf", 45)
-    FONT_BIG = love.graphics.newFont("assets/space_font.otf", 90)
+    FONT = love.graphics.newFont("assets/space_font.otf", 40)
+    FONT_BIG = love.graphics.newFont("assets/space_font.otf", 80)
     love.graphics.setDefaultFilter("nearest", "nearest")
     love.window.setTitle("The Atmosphere Game")
     love.window.setFullscreen(fullScreen)
@@ -86,10 +86,13 @@ function love.draw()
                        backgroundScaleFactor, backgroundScaleFactor)
 
     -- Draw your high score on the screen
-    love.graphics.print({grayColorRGB, ("HIGH SCORE: "), greenColorRGB, (" " .. highScore)}, 50, 20)
+    love.graphics.print({grayColorRGB, ("DIFFICULTY: "), greenColorRGB, (" " .. DIFFICULTY)}, 40, 20)
+
+    -- Draw your high score on the screen
+    love.graphics.print({grayColorRGB, ("HIGH SCORE: "), greenColorRGB, (" " .. highScore)}, 40, 80)
 
     -- Draw your score on the screen
-    love.graphics.print({grayColorRGB, ("SCORE: "), greenColorRGB, (" " .. score)}, 50, 80)
+    love.graphics.print({grayColorRGB, ("SCORE: "), greenColorRGB, (" " .. score)}, 40, 140)
 
     love.graphics.setColor(grayColorRGB)
 
@@ -185,6 +188,19 @@ function love.update(dt)
     -- check if have spawned required amount of obstacles
     local obstaclesSpawned = #OBSTACLES
 
+    local obstaclesCount = 0
+
+    if(DIFFICULTY == "EASY") then
+        obstaclesCount = obstaclesCountEasy
+    else if(DIFFICULTY == "NORMAL") then
+        obstaclesCount = obstaclesCountNormal
+    else 
+        obstaclesCount = obstaclesCountHard
+      end
+    end
+
+    print(obstaclesCount)
+
     -- Check if more obstacles need to be spawned
     if obstaclesSpawned < obstaclesCount then
         while obstaclesSpawned <= obstaclesCount do
@@ -249,17 +265,22 @@ function love.update(dt)
         return
     end
 
-    if (enableMusic and not isMusicPlaying) then
+    if (PLAY_MUSIC and not isMusicPlaying) then
         -- Start music if not started
         musicTrack:play()
         isMusicPlaying = true
+    else if(not PLAY_MUSIC and isMusicPlaying) then
+        musicTrack:stop()
+        isMusicPlaying = false
+      end
     end
 
     -- If some obstacle gets outside of the screen send them to the other side.
     for i = 1, #OBSTACLES do
-            if(OBSTACLES[i].x < 0) then
+            local offset = 100
+            if(OBSTACLES[i].x < -offset) then
                   OBSTACLES[i].x = love.graphics.getWidth()
-                else if(OBSTACLES[i].x > love.graphics.getWidth()) then
+                else if(OBSTACLES[i].x > love.graphics.getWidth() + offset) then
                  OBSTACLES[i].x = 0
             end
           end
@@ -317,8 +338,10 @@ function love.update(dt)
                 src:setVolume(1)
                 src:setPitch(0.9)
                 src:play()
-                -- Stop music track
-                musicTrack:stop()
+                if(PLAY_MUSIC) then
+                  -- Stop music track
+                  musicTrack:stop() 
+                end
                 --Show mouse pointer again
                 love.mouse.setVisible(true) 
         end
@@ -353,14 +376,18 @@ function START_GAME()
 end
 
 function resumeGame()
-    --Resume music
-    musicTrack:play()
+    if(PLAY_MUSIC) then
+      --Resume music
+       musicTrack:play() 
+    end
     gamePaused = false
 end
 
 function pauseGame()
-    --Resume music
-    musicTrack:pause()
+    if(PLAY_MUSIC) then
+      --Pause music
+      musicTrack:pause() 
+    end
     gamePaused = true
 end
 
@@ -369,9 +396,12 @@ function love.keypressed(key)
     if key == "escape" then
         if(gamePaused) then
             resumeGame()
+        else if(showSettings) then
+            showSettings = false
         else
           love.event.quit()
         end
+    end
         -- Restart the game if press "R"
     elseif key == "r" then
         love.event.quit("restart")

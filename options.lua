@@ -7,12 +7,17 @@ obstacleMinSize = 1
 obstacleMaxDirectionSpeed = 4
 obstacleMinDirectionSpeed = 1
 obstacleRotationSpeed = 0.05
-obstaclesCount = 12 -- DO NOT set too high!!!
+obstaclesCountHard = 14
+obstaclesCountNormal = 10
+obstaclesCountEasy = 6
+
 fallSpeed = 10
 moveSpeed = 6
-enableMusic = true
 musicVolume = 0.7 -- Between 0.0 and 1.0
 playerScaleFactor = 0.5
 obstacleScaleFactor = 0.1
 fullScreen = true
 
+--GAME MENU OPTIONS
+PLAY_MUSIC = true
+DIFFICULTY = "NORMAL"
