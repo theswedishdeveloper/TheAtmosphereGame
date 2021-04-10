@@ -213,7 +213,7 @@ function love.update(dt)
             local y = getRandomObstacleYPosition()
             local design = getRandomObstacleDesign()
             local rotation = getRandomObstacleRotation()
-            local x = getRandomObstacleXPosition(size)
+            local x = getRandomObstacleXPosition()
             local direction = getRandomObstacleDirection()
             local directionSpeed = getRandomObstacleDirectionSpeed()
             OBSTACLES[obstaclesSpawned] = {}
@@ -261,8 +261,12 @@ function love.update(dt)
             OBSTACLES[ii].y = getRandomObstacleYPosition()
             OBSTACLES[ii].design = getRandomObstacleDesign()
             OBSTACLES[ii].rotation = getRandomObstacleRotation()
+            OBSTACLES[ii].direction = getRandomObstacleDirection()
+            OBSTACLES[ii].directionSpeed = getRandomObstacleDirectionSpeed()
         end
     end
+
+    handleObstacleCollisions()
 
     -- If the game is over return
     if (IS_GAME_OVER) then 
@@ -281,7 +285,7 @@ function love.update(dt)
 
     -- If some obstacle gets outside of the screen send them to the other side.
     for i = 1, #OBSTACLES do
-            local offset = 100
+            local offset = 50
             local outsideMargin = 50
             if(OBSTACLES[i].x < -offset) then
                   OBSTACLES[i].x = love.graphics.getWidth() + outsideMargin
@@ -333,8 +337,8 @@ function love.update(dt)
                     player.img:getHeight() * PLAYER_SCALE_FACTOR / 2,
                     OBSTACLES[i].x, OBSTACLES[i].y,
                     OBSTACLES_APPERANCE[OBSTACLES[i].design].width * OBSTACLE_SCALE_FACTOR, 
-                    OBSTACLES_APPERANCE[OBSTACLES[i].design].height * OBSTACLE_SCALE_FACTOR) 
-                then
+                    OBSTACLES_APPERANCE[OBSTACLES[i].design].height * OBSTACLE_SCALE_FACTOR) then
+                        
                 -- Game is over!
                 IS_GAME_OVER = true
                 isGameMenuVisible = true
@@ -369,6 +373,56 @@ function love.update(dt)
     -- Add gravity to the player
     player.y = player.y + playerGravity
 
+end
+
+function handleObstacleCollisions()
+    -- Check if a obstacle has collided with a another obstacle!
+    -- If that is the case, send them at opposite directions.
+    for i = 0, #OBSTACLES do
+
+        for ii = 0, #OBSTACLES do
+
+            if (ii == i) then goto continue end
+
+            if overlap(OBSTACLES[ii].x, OBSTACLES[ii].y,
+                      OBSTACLES_APPERANCE[OBSTACLES[ii].design].width * OBSTACLE_SCALE_FACTOR, 
+                      OBSTACLES_APPERANCE[OBSTACLES[ii].design].height * OBSTACLE_SCALE_FACTOR,
+                      OBSTACLES[i].x, OBSTACLES[i].y,
+                      OBSTACLES_APPERANCE[OBSTACLES[i].design].width * OBSTACLE_SCALE_FACTOR, 
+                      OBSTACLES_APPERANCE[OBSTACLES[i].design].height * OBSTACLE_SCALE_FACTOR) then
+                        
+                      local difX = math.abs(OBSTACLES[i].x - OBSTACLES[ii].x)
+                      local upForceSpeed = 10
+
+                      --If difX is less than 20 then, the other obstacle has probably hit the obstacle from bottom side.
+
+                      if(difX < 20) then
+                        
+                        if(OBSTACLES[ii].y < OBSTACLES[i].y) then
+                            OBSTACLES[ii].speed = upForceSpeed
+                        else
+                            OBSTACLES[i].speed = upForceSpeed
+                        end
+                      
+                      elseif(OBSTACLES[i].x < OBSTACLES[ii].x) then
+
+                        OBSTACLES[i].direction = "left"
+                        OBSTACLES[ii].direction = "right"
+
+                      else
+                        
+                        OBSTACLES[i].direction = "right"
+                        OBSTACLES[ii].direction = "left"
+
+                      end
+
+            end
+
+            ::continue::
+
+         end
+
+      end
 end
 
 function START_GAME()

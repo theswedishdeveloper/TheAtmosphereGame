@@ -5,21 +5,7 @@ function getRandomObstacleYPosition()
 end
 
 function getRandomObstacleXPosition()
-    local newPos = 0
-    -- Check that there is no other obstacles that has same X to prevent the obstacles from collidate with each other.
-    while newPos == 0 do
-        local newPos2 = math.random(0, love.graphics.getWidth())
-        local foundObstacleInThatRange = false
-        local obstacleApproximatelySize = 30
-        for ii = 1, #OBSTACLES do
-            if newPos2 - obstacleApproximatelySize < OBSTACLES[ii].x and newPos2 + obstacleApproximatelySize > OBSTACLES[ii].x then
-                foundObstacleInThatRange = true
-            end
-        end
-        if (foundObstacleInThatRange == false) then 
-            newPos = newPos2 
-        end
-    end
+    local newPos = math.random(0, love.graphics.getWidth())
     return newPos
 end
 

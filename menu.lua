@@ -132,3 +132,4 @@ end
 function NEW_BUTTON(text, func)
     return {text = text, func = func, firstClick = false, lastClick = true}
 end
+
