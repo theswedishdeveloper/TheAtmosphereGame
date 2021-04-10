@@ -1,9 +1,7 @@
 function resetScreenColors() love.graphics.setColor(255, 255, 255) end
 
 function getRandomObstacleYPosition()
-    return love.graphics.getHeight() +
-               math.random(love.graphics.getHeight(),
-                           love.graphics.getHeight() * 3)
+    return love.graphics.getHeight() + math.random(love.graphics.getHeight(), love.graphics.getHeight() * 3)
 end
 
 function getRandomObstacleXPosition()
@@ -18,17 +16,19 @@ function getRandomObstacleXPosition()
                 foundObstacleInThatRange = true
             end
         end
-        if (foundObstacleInThatRange == false) then newPos = newPos2 end
+        if (foundObstacleInThatRange == false) then 
+            newPos = newPos2 
+        end
     end
     return newPos
 end
 
 function getRandomObstacleSpeed()
-    return math.random(obstacleMinSpeed, obstacleMaxSpeed)
+    return math.random(OBSTACLE_MIN_SPEED, OBSTACLE_MAX_SPEED)
 end
 
 function getRandomObstacleSize()
-    return math.random(obstacleMinSize, obstacleMaxSize)
+    return math.random(OBSTACLE_MIN_SIZE, OBSTACLE_MAX_SIZE)
 end
 
 function getRandomObstacleDesign() return math.random(1, 4) end
@@ -40,7 +40,7 @@ function overlap(x1, y1, w1, h1, x2, y2, w2, h2)
 end
 
 function getRandomObstacleDirectionSpeed() 
-    return math.random(obstacleMinDirectionSpeed, obstacleMaxDirectionSpeed) 
+    return math.random(OBSTACLE_MIN_DIRECTION_SPEED, OBSTACLE_MAX_DIRECTION_SPEED) 
 end
 
 function getRandomObstacleDirection() 

@@ -1,22 +1,24 @@
 -- Here you can edit the behavior of the game!
 -- Use these default settings as references.
-obstacleMaxSpeed = 7
-obstacleMinSpeed = 2
-obstacleMaxSize = 2
-obstacleMinSize = 1
-obstacleMaxDirectionSpeed = 4
-obstacleMinDirectionSpeed = 1
-obstacleRotationSpeed = 0.05
-obstaclesCountHard = 14
-obstaclesCountNormal = 10
-obstaclesCountEasy = 6
+OBSTACLE_MAX_SPEED = 8
+OBSTACLE_MIN_SPEED = 2
+OBSTACLE_MAX_SIZE = 2
+OBSTACLE_MIN_SIZE = 1
+OBSTACLE_MAX_DIRECTION_SPEED = 4
+OBSTACLE_MIN_DIRECTION_SPEED = 1
+OBSTACLE_ROTATION_SPEED = 0.05
 
-fallSpeed = 10
-moveSpeed = 6
-musicVolume = 0.7 -- Between 0.0 and 1.0
-playerScaleFactor = 0.5
-obstacleScaleFactor = 0.1
-fullScreen = true
+OBSTACLES_COUNT_HARD = 18
+OBSTACLES_COUNT_NORMAL = 14
+OBSTACLES_COUNT_EASY = 10
+
+BACKGROUND_SPEED_IDLE = 350
+BACKGROUND_SPEED = 450
+PLAYER_MOVE_SPEED = 350
+MUSIC_VOLUME = 0.7 -- Between 0.0 and 1.0
+PLAYER_SCALE_FACTOR = 0.5
+OBSTACLE_SCALE_FACTOR = 0.1
+FULLSCREEN = true
 
 --GAME MENU OPTIONS
 PLAY_MUSIC = true

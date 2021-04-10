@@ -1,10 +1,12 @@
 local SHOW_SETTINGS = false
-
 local menuButtons = {}
 local settingsButtons = {}
-local buttonHeight = 80
+local buttonHeight = 70
 local buttonMargin = 32
 local scaleFactor = 0.5
+local buttonColor = {0.4, 0.4, 0.4, 1.0}
+local buttonHoveredColor = {0.7, 0.7, 0.7, 1.0}
+local cursorY
 
 function SETUP_GAME_MENU()
 
@@ -41,61 +43,26 @@ function RENDER_GAME_MENU()
     local windowWidth = love.graphics.getWidth()
     local windowHeight = love.graphics.getHeight()
     local buttonWidth = windowWidth * (1 / 4)
-    local buttonsPanelHeight = #menuButtons * (buttonHeight + buttonMargin)
-    local cursorY = 0
+    cursorY = 0
 
     if(not SHOW_SETTINGS) then
-        
+
+     local buttonsPanelHeight = #menuButtons * (buttonHeight + buttonMargin)
+
      for i, button in ipairs(menuButtons) do
 
-        button.firstClick = button.lastClick
+        --Check if button is hovered or clicked
+        handleButton(button, windowWidth, windowHeight, buttonWidth, buttonsPanelHeight, cursorY)
 
-        local mouseX, mouseY = love.mouse.getPosition()
-
-        local buttonX = (windowWidth * scaleFactor) -
-                            (buttonWidth * scaleFactor)
-
-        local buttonY = (windowHeight * scaleFactor) -
-                            (buttonsPanelHeight * scaleFactor) + cursorY
-
-        local buttonHovered = mouseX > buttonX and mouseX < buttonX +
-                                  buttonWidth and mouseY > buttonY and mouseY <
-                                  buttonY + buttonHeight
-
-        local buttonColor = {0.4, 0.4, 0.4, 1.0}
-
-        if (buttonHovered) then 
-            buttonColor = {0.8, 0.8, 0.8, 1.0}
-        end
-
-        -- Get mouse click state
-        button.lastClick = love.mouse.isDown(1)
-
-        -- Check if a button was clicked
-        if (button.lastClick and not button.firstClick and buttonHovered) then
-            button.func()
-        end
-
-        love.graphics.setColor(buttonColor)
-        love.graphics.rectangle("fill", buttonX, buttonY, buttonWidth, buttonHeight, 20, 20)
-
-        love.graphics.setColor(255, 255, 255, 1)
-
-        local textWidth = FONT:getWidth(button.text)
-        local textHeight = FONT:getHeight(button.text)
-
-        love.graphics.print(button.text, (windowWidth * scaleFactor) - (textWidth * scaleFactor), buttonY + (textHeight * scaleFactor ^ 2))
-
-        cursorY = cursorY + (buttonHeight + buttonMargin)
-
-    end
+     end
 
    else 
 
-
     local index = 0
 
-    for i, button in ipairs(settingsButtons) do
+    local buttonsPanelHeight = #settingsButtons * (buttonHeight + buttonMargin)
+
+     for i, button in ipairs(settingsButtons) do
 
         if(index == 0) then
             if(PLAY_MUSIC) then
@@ -108,55 +75,58 @@ function RENDER_GAME_MENU()
           end
         end
 
-        button.firstClick = button.lastClick
-
-        local mouseX, mouseY = love.mouse.getPosition()
-
-        local buttonX = (windowWidth * scaleFactor) -
-                            (buttonWidth * scaleFactor)
-
-        local buttonY = (windowHeight * scaleFactor) -
-                            (buttonsPanelHeight * scaleFactor) + cursorY
-
-        local buttonHovered = mouseX > buttonX and mouseX < buttonX +
-                                  buttonWidth and mouseY > buttonY and mouseY <
-                                  buttonY + buttonHeight
-
-        local buttonColor = {0.4, 0.4, 0.4, 1.0}
-
-        if (buttonHovered) then 
-            buttonColor = {0.8, 0.8, 0.8, 1.0}
-        end
-
-        -- Get mouse click state
-        button.lastClick = love.mouse.isDown(1)
-
-        -- Check if a button was clicked
-        if (button.lastClick and not button.firstClick and buttonHovered) then
-            button.func()
-        end
-
-        love.graphics.setColor(buttonColor)
-        love.graphics.rectangle("fill", buttonX, buttonY, buttonWidth, buttonHeight, 20, 20)
-
-        love.graphics.setColor(255, 255, 255, 1)
-
-        local textWidth = FONT:getWidth(button.text)
-        local textHeight = FONT:getHeight(button.text)
-
-        love.graphics.print(button.text, (windowWidth * scaleFactor) - (textWidth * scaleFactor), buttonY + (textHeight * scaleFactor ^ 2))
-
-        cursorY = cursorY + (buttonHeight + buttonMargin)
+        --Check if button is hovered or clicked
+        handleButton(button, windowWidth, windowHeight, buttonWidth, buttonsPanelHeight)
 
         index = index + 1
 
+      end
+
     end
- end
 
-    -- Draw game creators name
-    local text = "Developed by Benjamin Ojanne"
-    love.graphics.print(text, 50, love.graphics.getHeight() - 80)
+    -- Draw Game Title
+    if(not IS_GAME_OVER) then
+      local text = "The Atmosphere Game"
+      local titleFont = love.graphics.newFont("assets/space_font.otf", windowWidth * (1 / 20))
+      love.graphics.setFont(titleFont)
+      love.graphics.print(text, love.graphics.getWidth() * (1/2) - titleFont:getWidth(text) / 2, love.graphics.getHeight() * (1 / 7))
+    end
+	
+end
 
+function handleButton(button, windowWidth, windowHeight, buttonWidth, buttonsPanelHeight)
+
+    button.firstClick = button.lastClick
+
+    local mouseX, mouseY = love.mouse.getPosition()
+
+    local buttonX = (windowWidth * scaleFactor) - (buttonWidth * scaleFactor)
+
+    local buttonY = (windowHeight * scaleFactor) -(buttonsPanelHeight * scaleFactor) + cursorY
+
+    local isButtonHovered = mouseX > buttonX and mouseX < buttonX + buttonWidth and mouseY > buttonY and mouseY < buttonY + buttonHeight
+
+    -- Get mouse click state
+    button.lastClick = love.mouse.isDown(1)
+
+    -- Check if a button was clicked
+    if (button.lastClick and not button.firstClick and isButtonHovered) then
+        button.func()
+    end
+
+    love.graphics.setColor(isButtonHovered and buttonHoveredColor or buttonColor)
+
+    love.graphics.rectangle("fill", buttonX, buttonY, buttonWidth, buttonHeight, 20, 20)
+
+    love.graphics.setColor(255, 255, 255, 1)
+
+    local textWidth = FONT:getWidth(button.text)
+    local textHeight = FONT:getHeight(button.text)
+
+    love.graphics.print(button.text, (windowWidth * scaleFactor) - (textWidth * scaleFactor), buttonY + (textHeight * scaleFactor))
+
+    cursorY = cursorY + (buttonHeight + buttonMargin)
+    
 end
 
 function NEW_BUTTON(text, func)
