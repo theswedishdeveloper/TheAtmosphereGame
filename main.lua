@@ -21,7 +21,7 @@ local backgroundY2
 local score = 0
 local highScore = 0
 local player = {}
-local playerGravity = 3
+local playerGravity = 6
 local playerOutSideOffset = 10
 local backgroundScaleFactor = 2
 local isMusicPlaying = false
@@ -38,7 +38,7 @@ function love.load()
 
     -- Window options
     FONT = love.graphics.newFont("assets/space_font.otf", 30)
-    FONT_BIG = love.graphics.newFont("assets/space_font.otf", 70)
+    FONT_BIG = love.graphics.newFont("assets/space_font.otf", 60)
     love.graphics.setDefaultFilter("nearest", "nearest")
     love.window.setTitle("The Atmosphere Game")
     love.window.setFullscreen(FULLSCREEN)
@@ -51,9 +51,7 @@ function love.load()
     -- Get all obstacle images into an array
     for i = 1, 4 do
         OBSTACLES_TEXTURES[i] = {}
-        OBSTACLES_TEXTURES[i].img = love.graphics.newImage(
-                                        "assets/obstacles/obstacle" .. i ..
-                                            ".png")
+        OBSTACLES_TEXTURES[i].img = love.graphics.newImage("assets/obstacles/obstacle" .. i ..".png")
         OBSTACLES_TEXTURES[i].width = OBSTACLES_TEXTURES[i].img:getWidth()
         OBSTACLES_TEXTURES[i].height = OBSTACLES_TEXTURES[i].img:getHeight()
     end
@@ -93,16 +91,13 @@ end
 function love.draw()
 
     -- Draw the background
-    love.graphics.draw(backgroundImage, 0, backgroundY, 0,
-                       backgroundScaleFactor, backgroundScaleFactor)
+    love.graphics.draw(backgroundImage, 0, backgroundY, 0, backgroundScaleFactor, backgroundScaleFactor)
 
-    love.graphics.draw(backgroundImage, 0, backgroundY2, 0,
-                       backgroundScaleFactor, backgroundScaleFactor)
+    love.graphics.draw(backgroundImage, 0, backgroundY2, 0, backgroundScaleFactor, backgroundScaleFactor)
 
     -- Draw FPS on the screen
     love.graphics.setFont(love.graphics.newFont(18))
-    love.graphics.print("FPS: " .. tostring(love.timer.getFPS()),
-                        love.graphics.getWidth() - 80, 10)
+    love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), love.graphics.getWidth() - 80, 10)
 
     love.graphics.setFont(FONT)
 
@@ -342,7 +337,7 @@ function love.update(dt)
 
     if love.keyboard.isDown("w") then
         if (player.y > 0) then
-            player.y = player.y - PLAYER_MOVE_SPEED * dt
+            player.y = player.y - PLAYER_MOVE_SPEED * 1.5 * dt
         end
     end
 
