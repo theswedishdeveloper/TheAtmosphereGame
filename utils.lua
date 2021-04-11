@@ -45,7 +45,14 @@ function GET_RANDOM_OBSTACLE_DIRECTION()
 end
 
 function LOAD_HIGHSCORE() 
-    return love.filesystem.read("highscore.sav") 
+
+    local highscore = love.filesystem.read("highscore.sav")
+
+    if(highscore == nil) then
+        highscore = 0
+    end
+
+    return highscore
 end
 
 function SAVE_HIGHSCORE(newHighScore)
