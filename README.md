@@ -3,7 +3,7 @@
 The game is about trying to beware of rocks on the way down to the earth through. Your job is to collect as many points as possible.
 
 
-`How To Play: `
+`Controls: `
 
 Move player Up: ↑ 
 
@@ -14,9 +14,14 @@ Move player Right: →
 Move player Down: ↓ 
 
 
+Pause game: P / ESC
+
+Resume game: P / ESC
+
+Restart game: R
+
 
 `PRO TIP:` Try to be at the bottom of the screen to get twice as fast points.
-
 
 
 
