@@ -86,7 +86,7 @@ function love.load()
 end
 
 function LIMIT_FPS()
-    if (love.timer.getFPS() > 60) then love.timer.sleep("0.01666666666") end
+    love.timer.sleep("0.010")
 end
 
 function love.draw()
