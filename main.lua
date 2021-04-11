@@ -86,7 +86,8 @@ function love.load()
 end
 
 function LIMIT_FPS()
-    love.timer.sleep("0.010")
+    --keep the FPS around 60!
+    love.timer.sleep("0.0115")
 end
 
 function love.draw()
