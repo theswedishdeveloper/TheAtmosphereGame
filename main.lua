@@ -51,7 +51,9 @@ function love.load()
     -- Get all obstacle images into an array
     for i = 1, 4 do
         OBSTACLES_TEXTURES[i] = {}
-        OBSTACLES_TEXTURES[i].img = love.graphics.newImage("assets/obstacles/obstacle" .. i ..".png")
+        OBSTACLES_TEXTURES[i].img = love.graphics.newImage(
+                                        "assets/obstacles/obstacle" .. i ..
+                                            ".png")
         OBSTACLES_TEXTURES[i].width = OBSTACLES_TEXTURES[i].img:getWidth()
         OBSTACLES_TEXTURES[i].height = OBSTACLES_TEXTURES[i].img:getHeight()
     end
@@ -83,16 +85,23 @@ function love.load()
 
 end
 
+function LIMIT_FPS()
+    if (love.timer.getFPS() > 60) then love.timer.sleep("0.01666666666") end
+end
+
 function love.draw()
 
     -- Draw the background
-    love.graphics.draw(backgroundImage, 0, backgroundY, 0, backgroundScaleFactor, backgroundScaleFactor)
+    love.graphics.draw(backgroundImage, 0, backgroundY, 0,
+                       backgroundScaleFactor, backgroundScaleFactor)
 
-    love.graphics.draw(backgroundImage, 0, backgroundY2, 0,backgroundScaleFactor, backgroundScaleFactor)
+    love.graphics.draw(backgroundImage, 0, backgroundY2, 0,
+                       backgroundScaleFactor, backgroundScaleFactor)
 
     -- Draw FPS on the screen
     love.graphics.setFont(love.graphics.newFont(18))
-    love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), love.graphics.getWidth() - 80, 10)
+    love.graphics.print("FPS: " .. tostring(love.timer.getFPS()),
+                        love.graphics.getWidth() - 80, 10)
 
     love.graphics.setFont(FONT)
 
@@ -134,15 +143,21 @@ function love.draw()
     if (IS_GAME_OVER) then
         love.graphics.setFont(FONT_BIG)
         local gameOverText = " GAME OVER!"
-        love.graphics.print({redColorRGB, (gameOverText)}, love.graphics.getWidth() / 2 - FONT_BIG:getWidth(gameOverText) / 2, love.graphics.getHeight() / 7)
-       -- Set font back to default
-       love.graphics.setFont(FONT)
+        love.graphics.print({redColorRGB, (gameOverText)}, love.graphics
+                                .getWidth() / 2 -
+                                FONT_BIG:getWidth(gameOverText) / 2,
+                            love.graphics.getHeight() / 7)
+        -- Set font back to default
+        love.graphics.setFont(FONT)
     end
 
     -- Draw "Game Paused" on the screen if game is paused
     if (IS_GAME_PAUSED) then
         love.graphics.setFont(FONT_BIG)
-        love.graphics.print({redColorRGB, "GAME PAUSED"}, love.graphics.getWidth() / 2 - FONT_BIG:getWidth("GAME PAUSED") / 2, love.graphics.getHeight() / 4)
+        love.graphics.print({redColorRGB, "GAME PAUSED"}, love.graphics
+                                .getWidth() / 2 -
+                                FONT_BIG:getWidth("GAME PAUSED") / 2,
+                            love.graphics.getHeight() / 4)
         -- Set font back to default
         love.graphics.setFont(FONT)
     end
@@ -153,9 +168,11 @@ function love.draw()
     if (not lookingLeft) then playerSize = playerSize * -1 end
 
     if (not IS_GAME_MENU_VISIBLE or IS_GAME_PAUSED) then
-        love.graphics.draw(player.img, player.x, player.y, 0, playerSize, math.abs(playerSize), player.img:getWidth() / 2, player.img:getHeight() / 2) 
+        love.graphics.draw(player.img, player.x, player.y, 0, playerSize,
+                           math.abs(playerSize), player.img:getWidth() / 2,
+                           player.img:getHeight() / 2)
     end
-    
+
     if (IS_GAME_MENU_VISIBLE) then RENDER_GAME_MENU() end
 
     -- Reset screen colors
@@ -177,13 +194,19 @@ end
 
 function love.update(dt)
 
+    LIMIT_FPS()
+
     -- If the game is over or game is not loaded, return!
     if (not isGameLoaded or IS_GAME_PAUSED) then return end
 
     -- This handles the smooth background scrolling behavior.
-    backgroundY = backgroundY + (not IS_GAME_MENU_VISIBLE and BACKGROUND_SPEED or BACKGROUND_SPEED_IDLE) * dt
+    backgroundY = backgroundY +
+                      (not IS_GAME_MENU_VISIBLE and BACKGROUND_SPEED or
+                          BACKGROUND_SPEED_IDLE) * dt
 
-    backgroundY2 = backgroundY2 + (not IS_GAME_MENU_VISIBLE and BACKGROUND_SPEED or BACKGROUND_SPEED_IDLE) * dt
+    backgroundY2 = backgroundY2 +
+                       (not IS_GAME_MENU_VISIBLE and BACKGROUND_SPEED or
+                           BACKGROUND_SPEED_IDLE) * dt
 
     if (backgroundY >= backgroundImage:getHeight() * backgroundScaleFactor) then
         backgroundY = 0
@@ -269,7 +292,7 @@ function love.update(dt)
         end
     end
 
-    --Check if obstacles has collided with eachother.
+    -- Check if obstacles has collided with eachother.
     HANDLE_OBSTACLE_COLLISIONS()
 
     -- If the game is over return
@@ -341,22 +364,22 @@ function love.update(dt)
                    OBSTACLES_TEXTURES[OBSTACLES[i].texture].width *
                        OBSTACLE_SCALE_FACTOR, OBSTACLES_TEXTURES[OBSTACLES[i]
                        .texture].height * OBSTACLE_SCALE_FACTOR) then
-         
+
             -- Game over!
             IS_GAME_OVER = true
             IS_GAME_MENU_VISIBLE = true
-           
+
             -- play sound effect
             local src = love.audio.newSource("assets/explosion.mp3", "static")
             src:setVolume(1)
             src:setPitch(0.8)
             src:play()
-           
+
             if (PLAY_MUSIC) then
                 -- Stop music track
                 musicTrack:stop()
             end
-          
+
             -- Show mouse pointer again
             love.mouse.setVisible(true)
 
@@ -373,8 +396,8 @@ function love.update(dt)
     if (IS_GAME_OVER) then
         -- Check if we have reached a new high score!
         if (tonumber(highScore) < score) then
-             highScore = score 
-             SAVE_HIGHSCORE(highScore)
+            highScore = score
+            SAVE_HIGHSCORE(highScore)
         end
     end
 
