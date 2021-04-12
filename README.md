@@ -32,14 +32,14 @@ Restart game: R
 
 ☑ Add obstacles
 
-☑ Spawn obstacles at a random position
+☑ Spawn obstacles at random positions
 
 ☑ Add music & sound effects
 
-☑ Change character designs
+☑ Change character textures
 
-☑ Add Game Menu
+☑ Add game menu
 
-☑ Add High score
+☑ Add high score
 
 ☑ Add pause game feature
