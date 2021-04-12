@@ -4,7 +4,7 @@ The game is about trying to beware of rocks on the way down to the earth through
 
 ![image](https://user-images.githubusercontent.com/75026831/114431853-41820c00-9bc0-11eb-88af-b302aec7d23a.png)
 
-`**Controls:**`
+**`Controls:`**
 
 Move player Up: **W**
 
@@ -22,17 +22,17 @@ Resume game: **P / ESC**
 Restart game: **R**
 
 
-`**PRO TIP:**` Try to be at the bottom of the screen to get twice as fast points.
+**`PRO TIP:`** Try to be at the bottom of the screen to get twice as fast points.
 
 
-`**CREDITS:**`
+**`CREDITS:`**
 
 Design/Music: opengameart.org
 
 Development: Benjamin Ojanne
 
 
-`**TODO:**`
+**`TODO:`**
 
 ☑ Add player
 
