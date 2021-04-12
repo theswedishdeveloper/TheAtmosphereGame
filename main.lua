@@ -132,20 +132,16 @@ function love.draw()
         love.graphics.print({
             redColorRGB, (gameOverText)
         }, love.graphics.getWidth() / 2 -FONT_BIG:getWidth(gameOverText) / 2,love.graphics.getHeight() / 7)
-       
-        -- Set font back to default
-        love.graphics.setFont(FONT)
-
-    elseif(IS_GAME_PAUSED) then -- Draw "Game Paused" on the screen if game is paused
+    
+    elseif(IS_GAME_PAUSED) then 
+        
+        -- Draw "Game Paused" on the screen if game is paused
           
         love.graphics.setFont(FONT_BIG)
       
         love.graphics.print({redColorRGB, "GAME PAUSED"}, 
             love.graphics.getWidth() / 2 - FONT_BIG:getWidth("GAME PAUSED") / 2, 
-            love.graphics.getHeight() / 4)
-      
-            -- Set font back to default
-        love.graphics.setFont(FONT)
+            love.graphics.getHeight() / 3)
     
     end
 
@@ -161,26 +157,13 @@ function love.draw()
         math.abs(playerSize), player.img:getWidth() / 2, player.img:getHeight() / 2)
     end
 
+    -- Render the game menu
     if (IS_GAME_MENU_VISIBLE) then 
         RENDER_GAME_MENU() 
     end
 
     -- Reset screen colors
     RESET_SCREEN_COLORS()
-
-end
-
-function RESTART_GAME()
-    
-    -- Reset player position
-    player.x = love.graphics.getWidth() / 2
-    player.y = love.graphics.getHeight() / 4
-        
-    -- Reset score
-    PLAYER_SCORE = 0    
-    
-    -- Destroy all obstacles
-    CLEAR_OBSTACLES()
 
 end
 
@@ -329,7 +312,11 @@ function love.update(dt)
     end
 
     -- Check if player has collided with some obstacle!
-    for i = 1, #OBSTACLES do
+    for i = 0, #OBSTACLES do
+
+        print(" " .. i)
+        
+
         if OVERLAP(player.x, player.y,
                    player.img:getWidth() * PLAYER_SCALE_FACTOR / 2,
                    player.img:getHeight() * PLAYER_SCALE_FACTOR / 2,
@@ -378,3 +365,16 @@ function love.update(dt)
 
 end
 
+function RESTART_GAME()
+    
+    -- Player start position
+    player.x = love.graphics.getWidth() / 2
+    player.y = love.graphics.getHeight() / 4
+        
+    -- Reset score count
+    PLAYER_SCORE = 0    
+    
+    -- Destroy all obstacles
+    CLEAR_OBSTACLES()
+
+end

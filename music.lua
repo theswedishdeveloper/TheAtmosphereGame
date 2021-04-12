@@ -1,7 +1,6 @@
 MUSIC_TRACK = nil
 local isMusicPlaying = false
 
-
 function SETUP_MUSIC_TRACK()
     
     MUSIC_TRACK = love.audio.newSource("assets/music.mp3", "static")
@@ -9,7 +8,6 @@ function SETUP_MUSIC_TRACK()
     MUSIC_TRACK:setLooping(true)
 
 end
-
 
 function PLAY_MUSIC_TRACK()
 
@@ -19,7 +17,6 @@ function PLAY_MUSIC_TRACK()
     end
 
 end
-
 
 function PAUSE_MUSIC_TRACK()
 

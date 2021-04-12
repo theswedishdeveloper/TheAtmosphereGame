@@ -11,24 +11,35 @@ local cursorY
 function SETUP_GAME_MENU()
 
     table.insert(menuButtons, NEW_BUTTON("START GAME", function()
+
         if (IS_GAME_PAUSED and not IS_GAME_OVER) then
             RESUME_GAME()
         else
             START_GAME()
         end
+
     end))
 
     table.insert(menuButtons, NEW_BUTTON("SETTINGS", function()
+
         SHOW_SETTINGS = not SHOW_SETTINGS
+
     end))
 
-    table.insert(menuButtons, NEW_BUTTON("EXIT GAME", function() love.event.quit(0) end))
+    table.insert(menuButtons, NEW_BUTTON("EXIT GAME", function() 
+
+        love.event.quit(0) 
+
+    end))
 
     table.insert(settingsButtons, NEW_BUTTON("MUSIC:", function()
+
         PLAY_MUSIC = not PLAY_MUSIC
+
     end))
 
     table.insert(settingsButtons, NEW_BUTTON("DIFFICULTY:", function()
+
         if (DIFFICULTY == "EASY") then
             DIFFICULTY = "NORMAL"
         else
@@ -38,10 +49,13 @@ function SETUP_GAME_MENU()
                 DIFFICULTY = "EASY"
             end
         end
+
     end))
 
     table.insert(settingsButtons, NEW_BUTTON("BACK TO MENU", function()
+        
         SHOW_SETTINGS = false
+
     end))
 
 end
@@ -55,17 +69,16 @@ function RENDER_GAME_MENU()
 
     if (not IS_GAME_OVER) then
         local text = "THE ATMOSPHERE GAME"
-        local titleFont = love.graphics.newFont("assets/space_font.otf", windowWidth * (1 / 30))
+        local titleFont = love.graphics.newFont("assets/space_font.otf", windowWidth * (1 / 20))
         love.graphics.setFont(titleFont)
         love.graphics.print(text, love.graphics.getWidth() * (1 / 2) - titleFont:getWidth(text) / 2, love.graphics.getHeight() * (1 / 7))
-        --Change back to original font
-        love.graphics.setFont(FONT)
     end
 
     -- Show tutorial
     if (not IS_GAME_PAUSED) then 
-        drawTutorial() 
+        DRAW_GAME_TUTORIAL() 
     end
+
 
     if (not SHOW_SETTINGS) then
 
@@ -127,7 +140,13 @@ function HANDLE_BUTTON(button, windowWidth, windowHeight, buttonWidth, buttonsPa
 
     local buttonX = (windowWidth * scaleFactor) - (buttonWidth * scaleFactor)
 
-    local buttonY = (windowHeight * scaleFactor) - (buttonsPanelHeight * scaleFactor) + cursorY
+    local top = 25
+
+    if(IS_GAME_PAUSED) then
+        top = 100
+    end
+
+    local buttonY = (windowHeight * scaleFactor) - (buttonsPanelHeight * scaleFactor) + cursorY + top
 
     local isButtonHovered = mouseX > buttonX and mouseX < buttonX + buttonWidth and mouseY > buttonY and mouseY < buttonY + buttonHeight
 
@@ -141,12 +160,14 @@ function HANDLE_BUTTON(button, windowWidth, windowHeight, buttonWidth, buttonsPa
 
     love.graphics.setColor(isButtonHovered and buttonHoveredColor or buttonColor)
 
-    love.graphics.rectangle("fill", buttonX, buttonY, buttonWidth, buttonHeight, 20, 20)
+    love.graphics.rectangle("fill", buttonX, buttonY, buttonWidth, buttonHeight, 15, 15)
 
     love.graphics.setColor(255, 255, 255, 1)
 
     local textWidth = FONT:getWidth(button.text)
     local textHeight = FONT:getHeight(button.text)
+
+    love.graphics.setFont(FONT)
 
     love.graphics.print(button.text, (windowWidth * scaleFactor) - (textWidth * scaleFactor), buttonY + (textHeight * scaleFactor))
 
