@@ -32,6 +32,9 @@ Design/Music: opengameart.org
 Development: Benjamin Ojanne
 
 
+**`WARNING:`** You can get dizzy while playing the game.
+
+
 **`TODO:`**
 
 ☑ Add player
