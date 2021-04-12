@@ -51,9 +51,8 @@ function RENDER_GAME_MENU()
     local windowWidth = love.graphics.getWidth()
     local windowHeight = love.graphics.getHeight()
     local buttonWidth = windowWidth * (1 / 4)
-    cursorY = 10
+    cursorY = 0
 
-    -- Draw Game Title
     if (not IS_GAME_OVER) then
         local text = "THE ATMOSPHERE GAME"
         local titleFont = love.graphics.newFont("assets/space_font.otf", windowWidth * (1 / 30))
@@ -76,7 +75,7 @@ function RENDER_GAME_MENU()
 
             if (IS_GAME_PAUSED and button.text == "SETTINGS") then
                 goto continue
-            elseif (IS_GAME_OVER and button.text == "START GAME") then
+            elseif (IS_GAME_OVER and (button.text == "START GAME" or button.text == "RESUME GAME")) then
                 button.text = "RESTART GAME"
             elseif (IS_GAME_PAUSED and button.text == "START GAME") then
                 button.text = "RESUME GAME"
@@ -156,6 +155,8 @@ function HANDLE_BUTTON(button, windowWidth, windowHeight, buttonWidth, buttonsPa
 end
 
 function NEW_BUTTON(text, func)
+
     return {text = text, func = func, firstClick = false, lastClick = true}
+
 end
 

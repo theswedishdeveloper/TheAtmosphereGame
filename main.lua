@@ -3,14 +3,17 @@ require "utils"
 require("menu")
 require("tutorial")
 require("keyevents")
+require("music")
 
 OBSTACLES = {}
 OBSTACLES_TEXTURES = {}
 FONT = nil
 FONT_BIG = nil
-IS_GAME_OVER = false
 IS_GAME_MENU_VISIBLE = true
 IS_GAME_PAUSED = false
+IS_GAME_OVER = false
+PLAYER_LOOKING_LEFT = false
+PLAYER_SCORE = 0
 
 local greenColorRGB = {0, 1, 0, 1}
 local redColorRGB = {255, 0, 0, 1}
@@ -18,16 +21,10 @@ local grayColorRGB = {50, 50, 50, 1}
 local backgroundImage
 local backgroundY
 local backgroundY2
-local score = 0
 local highScore = 0
 local player = {}
-local playerGravity = 6
-local playerOutSideOffset = 10
 local backgroundScaleFactor = 2
-local isMusicPlaying = false
 local isGameLoaded = false
-local musicTrack = nil
-local lookingLeft = false
 
 function love.load()
 
@@ -45,8 +42,8 @@ function love.load()
 
     -- Initialize background
     backgroundImage = love.graphics.newImage("assets/sky.jpg")
+    backgroundY2 = -(backgroundImage:getHeight() * backgroundScaleFactor)
     backgroundY = 0
-    backgroundY2 = -backgroundImage:getHeight() * backgroundScaleFactor
 
     -- Get all obstacle images into an array
     for i = 1, 4 do
@@ -64,28 +61,21 @@ function love.load()
     -- Setup game menu
     SETUP_GAME_MENU()
 
-    -- Load music track
-    musicTrack = love.audio.newSource("assets/music.mp3", "static")
-    musicTrack:setVolume(MUSIC_VOLUME)
-    musicTrack:setLooping(true)
+    -- Setup music track
+    SETUP_MUSIC_TRACK()
 
     print("Game successfully loaded.")
     print("Have Fun!")
     print("Created by Benjamin Ojanne 2021")
 
-    -- Show mouse pointer
-    love.mouse.setVisible(true)
-
     -- Get latest highscore from file
     highScore = LOAD_HIGHSCORE()
 
+    -- Show mouse pointer
+    love.mouse.setVisible(true)
+
     isGameLoaded = true
 
-end
-
-function LIMIT_FPS()
-    --keep the FPS around 60!
-    love.timer.sleep("0.0115")
 end
 
 function love.draw()
@@ -101,25 +91,22 @@ function love.draw()
 
     love.graphics.setFont(FONT)
 
-    -- Draw your high score on the screen
     love.graphics.print({
         grayColorRGB, ("DIFFICULTY: "), greenColorRGB, (" " .. DIFFICULTY)
     }, 40, 20)
 
-    -- Draw your high score on the screen
     love.graphics.print({
         grayColorRGB, ("HIGH SCORE: "), greenColorRGB, (" " .. highScore)
     }, 40, 60)
 
-    -- Draw your score on the screen
     love.graphics.print({
-        grayColorRGB, ("SCORE: "), greenColorRGB, (" " .. score)
+        grayColorRGB, ("SCORE: "), greenColorRGB, (" " .. PLAYER_SCORE)
     }, 40, 100)
 
     love.graphics.setColor(grayColorRGB)
 
     -- Draw obstacles
-    for i = 1, #OBSTACLES do
+    for i = 0, #OBSTACLES do
         local x = OBSTACLES[i].x
         local y = OBSTACLES[i].y
         local size = OBSTACLES[i].size
@@ -137,39 +124,46 @@ function love.draw()
 
     -- Show game over screen if game is over.
     if (IS_GAME_OVER) then
+       
         love.graphics.setFont(FONT_BIG)
+       
         local gameOverText = " GAME OVER!"
-        love.graphics.print({redColorRGB, (gameOverText)}, love.graphics
-                                .getWidth() / 2 -
-                                FONT_BIG:getWidth(gameOverText) / 2,
-                            love.graphics.getHeight() / 7)
+       
+        love.graphics.print({
+            redColorRGB, (gameOverText)
+        }, love.graphics.getWidth() / 2 -FONT_BIG:getWidth(gameOverText) / 2,love.graphics.getHeight() / 7)
+       
         -- Set font back to default
         love.graphics.setFont(FONT)
-    end
 
-    -- Draw "Game Paused" on the screen if game is paused
-    if (IS_GAME_PAUSED) then
+    elseif(IS_GAME_PAUSED) then -- Draw "Game Paused" on the screen if game is paused
+          
         love.graphics.setFont(FONT_BIG)
-        love.graphics.print({redColorRGB, "GAME PAUSED"}, love.graphics
-                                .getWidth() / 2 -
-                                FONT_BIG:getWidth("GAME PAUSED") / 2,
-                            love.graphics.getHeight() / 4)
-        -- Set font back to default
+      
+        love.graphics.print({redColorRGB, "GAME PAUSED"}, 
+            love.graphics.getWidth() / 2 - FONT_BIG:getWidth("GAME PAUSED") / 2, 
+            love.graphics.getHeight() / 4)
+      
+            -- Set font back to default
         love.graphics.setFont(FONT)
+    
     end
 
     -- Draw player
     local playerSize = PLAYER_SCALE_FACTOR
 
-    if (not lookingLeft) then playerSize = playerSize * -1 end
-
-    if (not IS_GAME_MENU_VISIBLE or IS_GAME_PAUSED) then
-        love.graphics.draw(player.img, player.x, player.y, 0, playerSize,
-                           math.abs(playerSize), player.img:getWidth() / 2,
-                           player.img:getHeight() / 2)
+    if (not PLAYER_LOOKING_LEFT) then 
+        playerSize = playerSize * -1 
     end
 
-    if (IS_GAME_MENU_VISIBLE) then RENDER_GAME_MENU() end
+    if (not IS_GAME_MENU_VISIBLE or IS_GAME_PAUSED) then
+        love.graphics.draw(player.img, player.x, player.y, 0, playerSize, 
+        math.abs(playerSize), player.img:getWidth() / 2, player.img:getHeight() / 2)
+    end
+
+    if (IS_GAME_MENU_VISIBLE) then 
+        RENDER_GAME_MENU() 
+    end
 
     -- Reset screen colors
     RESET_SCREEN_COLORS()
@@ -177,32 +171,33 @@ function love.draw()
 end
 
 function RESTART_GAME()
+    
     -- Reset player position
     player.x = love.graphics.getWidth() / 2
     player.y = love.graphics.getHeight() / 4
-    -- Reset music by setting music track
-    isMusicPlaying = false
-    -- Destroy all obstacles
-    for k, v in pairs(OBSTACLES) do OBSTACLES[k] = nil end
+        
     -- Reset score
-    score = 0
+    PLAYER_SCORE = 0    
+    
+    -- Destroy all obstacles
+    CLEAR_OBSTACLES()
+
 end
 
 function love.update(dt)
 
+    --Don't let the FPS to go much over 60!
     LIMIT_FPS()
 
     -- If the game is over or game is not loaded, return!
-    if (not isGameLoaded or IS_GAME_PAUSED) then return end
+    if (not isGameLoaded or IS_GAME_PAUSED) then 
+        return 
+    end
 
     -- This handles the smooth background scrolling behavior.
-    backgroundY = backgroundY +
-                      (not IS_GAME_MENU_VISIBLE and BACKGROUND_SPEED or
-                          BACKGROUND_SPEED_IDLE) * dt
+    backgroundY = backgroundY + (not IS_GAME_MENU_VISIBLE and BACKGROUND_SPEED or BACKGROUND_SPEED_IDLE) * dt
 
-    backgroundY2 = backgroundY2 +
-                       (not IS_GAME_MENU_VISIBLE and BACKGROUND_SPEED or
-                           BACKGROUND_SPEED_IDLE) * dt
+    backgroundY2 = backgroundY2 + (not IS_GAME_MENU_VISIBLE and BACKGROUND_SPEED or BACKGROUND_SPEED_IDLE) * dt
 
     if (backgroundY >= backgroundImage:getHeight() * backgroundScaleFactor) then
         backgroundY = 0
@@ -288,66 +283,48 @@ function love.update(dt)
         end
     end
 
+    -- If some obstacle gets outside of the screen send them to the other side.
+    for i = 1, #OBSTACLES do
+
+        local obstacleSize = OBSTACLES_TEXTURES[OBSTACLES[i].texture].width * OBSTACLES[i].size
+
+        if (OBSTACLES[i].x < -obstacleSize) then
+            OBSTACLES[i].x = love.graphics.getWidth() + obstacleSize
+        elseif (OBSTACLES[i].x > love.graphics.getWidth() + obstacleSize) then
+            OBSTACLES[i].x = -obstacleSize
+        end
+
+    end
+
     -- Check if obstacles has collided with eachother.
     HANDLE_OBSTACLE_COLLISIONS()
 
     -- If the game is over return
-    if (IS_GAME_OVER) then return end
-
-    if (PLAY_MUSIC and not isMusicPlaying) then
-        -- Start music if not started
-        musicTrack:play()
-        isMusicPlaying = true
-    else
-        if (not PLAY_MUSIC and isMusicPlaying) then
-            musicTrack:stop()
-            isMusicPlaying = false
-        end
-    end
-
-    -- If some obstacle gets outside of the screen send them to the other side.
-    for i = 1, #OBSTACLES do
-        local offset = 50
-        local outsideMargin = 50
-        if (OBSTACLES[i].x < -offset) then
-            OBSTACLES[i].x = love.graphics.getWidth() + outsideMargin
-        else
-            if (OBSTACLES[i].x > love.graphics.getWidth() + offset) then
-                OBSTACLES[i].x = -outsideMargin
-            end
-        end
+    if (IS_GAME_OVER) then 
+        return 
     end
 
     -- Game is not started, return.
-    if (IS_GAME_MENU_VISIBLE) then return end
-
-    if love.keyboard.isDown("d") then
-        player.x = player.x + PLAYER_MOVE_SPEED * dt
-        lookingLeft = false
+    if (IS_GAME_MENU_VISIBLE) then 
+        return 
     end
 
-    if love.keyboard.isDown("a") then
-        player.x = player.x - PLAYER_MOVE_SPEED * dt
-        lookingLeft = true
+    if(PLAY_MUSIC) then
+        PLAY_MUSIC_TRACK()
+    else
+        STOP_MUSIC_TRACK()
     end
 
-    if love.keyboard.isDown("s") then
-        player.y = player.y + PLAYER_MOVE_SPEED * dt
-    end
-
-    if love.keyboard.isDown("w") then
-        if (player.y > 0) then
-            player.y = player.y - PLAYER_MOVE_SPEED * 1.5 * dt
-        end
-    end
+    --Move player if user press w,a,s or d
+    HANDLE_PLAYER_KEY_EVENTS(player, dt)
 
     -- If player gets outside of the screen on the right side then sent the player to left side.
-    if player.x - playerOutSideOffset >= love.graphics.getWidth() then
+    if player.x > love.graphics.getWidth() then
         player.x = 0
     end
 
     -- If player gets outside of the screen on the left side then sent the player to right side.
-    if player.x + playerOutSideOffset <= 0 then
+    if player.x < 0 then
         player.x = love.graphics.getWidth()
     end
 
@@ -356,12 +333,13 @@ function love.update(dt)
         if OVERLAP(player.x, player.y,
                    player.img:getWidth() * PLAYER_SCALE_FACTOR / 2,
                    player.img:getHeight() * PLAYER_SCALE_FACTOR / 2,
-                   OBSTACLES[i].x, OBSTACLES[i].y,
-                   OBSTACLES_TEXTURES[OBSTACLES[i].texture].width *
-                       OBSTACLE_SCALE_FACTOR, OBSTACLES_TEXTURES[OBSTACLES[i]
+                    OBSTACLES[i].x, OBSTACLES[i].y,
+                    OBSTACLES_TEXTURES[OBSTACLES[i].texture].width *
+                    OBSTACLE_SCALE_FACTOR, OBSTACLES_TEXTURES[OBSTACLES[i]
                        .texture].height * OBSTACLE_SCALE_FACTOR) then
 
-            -- Game over!
+            -- GAME OVER!
+
             IS_GAME_OVER = true
             IS_GAME_MENU_VISIBLE = true
 
@@ -371,61 +349,32 @@ function love.update(dt)
             src:setPitch(0.8)
             src:play()
 
-            if (PLAY_MUSIC) then
-                -- Stop music track
-                musicTrack:stop()
-            end
+            -- Stop music track
+            STOP_MUSIC_TRACK()
 
             -- Show mouse pointer again
             love.mouse.setVisible(true)
+
+            -- Check if we have reached a new high score!
+            if (tonumber(highScore) < PLAYER_SCORE) then
+                highScore = PLAYER_SCORE
+                SAVE_HIGHSCORE(highScore)
+            end
+
+            return
 
         end
     end
 
     -- If the player is located at the bottom of the screen give twice as fast points.
     if (player.y > love.graphics.getHeight() / 2) then
-        score = score + 2
+        PLAYER_SCORE = PLAYER_SCORE + 2
     else
-        score = score + 1
-    end
-
-    if (IS_GAME_OVER) then
-        -- Check if we have reached a new high score!
-        if (tonumber(highScore) < score) then
-            highScore = score
-            SAVE_HIGHSCORE(highScore)
-        end
+        PLAYER_SCORE = PLAYER_SCORE + 1
     end
 
     -- Add gravity to the player
-    player.y = player.y + playerGravity
+    player.y = player.y + PLAYER_GRAVITY
 
 end
 
-function START_GAME()
-    RESTART_GAME()
-    -- Hide mouse pointer
-    love.mouse.setVisible(false)
-    IS_GAME_OVER = false
-    IS_GAME_MENU_VISIBLE = false
-end
-
-function RESUME_GAME()
-    if (PLAY_MUSIC) then
-        -- Resume music
-        musicTrack:play()
-    end
-    love.mouse.setVisible(false)
-    IS_GAME_PAUSED = false
-    IS_GAME_MENU_VISIBLE = false
-end
-
-function PAUSE_GAME()
-    if (PLAY_MUSIC) then
-        -- Pause music
-        musicTrack:pause()
-    end
-    love.mouse.setVisible(true)
-    IS_GAME_PAUSED = true
-    IS_GAME_MENU_VISIBLE = true
-end
