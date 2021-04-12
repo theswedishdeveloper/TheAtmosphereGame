@@ -1,5 +1,5 @@
 function love.keypressed(key)
-    -- Exit the game if press "ESC"
+
     if key == "escape" then
 
         if (IS_GAME_PAUSED) then
@@ -10,13 +10,12 @@ function love.keypressed(key)
                 
             SHOW_SETTINGS = false
 
-            elseif(not IS_GAME_MENU_VISIBLE) then
+        elseif(not IS_GAME_MENU_VISIBLE) then
 
-                PAUSE_GAME()
+            PAUSE_GAME()
                 
-            end
+        end
     
-        -- Restart the game if press "R"
     elseif key == "r" then
        
         if not IS_GAME_PAUSED then
@@ -29,9 +28,8 @@ function love.keypressed(key)
 
         end
 
-    elseif key == "p" then 
-       
-        -- Pause/resume game
+    elseif key == "p" then
+
         if (IS_GAME_PAUSED) then
 
             RESUME_GAME()

@@ -26,6 +26,7 @@ local player = {}
 local backgroundScaleFactor = 2
 local isGameLoaded = false
 
+
 function love.load()
 
     print("The epic Atmosphere game is loading...")
@@ -78,6 +79,7 @@ function love.load()
 
 end
 
+
 function love.draw()
 
     -- Draw the background
@@ -127,7 +129,7 @@ function love.draw()
        
         love.graphics.setFont(FONT_BIG)
        
-        local gameOverText = " GAME OVER!"
+        local gameOverText = "GAME OVER!"
        
         love.graphics.print({
             redColorRGB, (gameOverText)
@@ -139,9 +141,11 @@ function love.draw()
           
         love.graphics.setFont(FONT_BIG)
       
-        love.graphics.print({redColorRGB, "GAME PAUSED"}, 
-            love.graphics.getWidth() / 2 - FONT_BIG:getWidth("GAME PAUSED") / 2, 
-            love.graphics.getHeight() / 3)
+        local text = "GAME PAUSED"
+
+        love.graphics.print({redColorRGB, text}, 
+            love.graphics.getWidth() / 2 - FONT_BIG:getWidth(text) / 2, 
+            love.graphics.getHeight() / 5 + FONT_BIG:getHeight(text))
     
     end
 
@@ -230,7 +234,7 @@ function love.update(dt)
     end
 
     -- Move all obstacles
-    for i = 1, #OBSTACLES do
+    for i = 0, #OBSTACLES do
         OBSTACLES[i].y = OBSTACLES[i].y - OBSTACLES[i].speed
         if (OBSTACLES[i].direction == "right") then
             OBSTACLES[i].x = OBSTACLES[i].x + OBSTACLES[i].directionSpeed
@@ -240,7 +244,7 @@ function love.update(dt)
     end
 
     -- Rotate all obstacles
-    for i = 1, #OBSTACLES do
+    for i = 0, #OBSTACLES do
         local rotation = OBSTACLES[i].rotation
         if (rotation + OBSTACLE_ROTATION_SPEED >= 360) then rotation = 0 end
         if (i % 2 == 0) then
@@ -251,7 +255,7 @@ function love.update(dt)
     end
 
     -- Check if obstacles need to be respawned
-    for ii = 1, #OBSTACLES do
+    for ii = 0, #OBSTACLES do
         local obstacleYPos = OBSTACLES[ii].y
         if (obstacleYPos < -100) then
             -- Respawn obstacle
@@ -267,7 +271,7 @@ function love.update(dt)
     end
 
     -- If some obstacle gets outside of the screen send them to the other side.
-    for i = 1, #OBSTACLES do
+    for i = 0, #OBSTACLES do
 
         local obstacleSize = OBSTACLES_TEXTURES[OBSTACLES[i].texture].width * OBSTACLES[i].size
 
@@ -313,10 +317,7 @@ function love.update(dt)
 
     -- Check if player has collided with some obstacle!
     for i = 0, #OBSTACLES do
-
-        print(" " .. i)
         
-
         if OVERLAP(player.x, player.y,
                    player.img:getWidth() * PLAYER_SCALE_FACTOR / 2,
                    player.img:getHeight() * PLAYER_SCALE_FACTOR / 2,
@@ -326,7 +327,6 @@ function love.update(dt)
                        .texture].height * OBSTACLE_SCALE_FACTOR) then
 
             -- GAME OVER!
-
             IS_GAME_OVER = true
             IS_GAME_MENU_VISIBLE = true
 

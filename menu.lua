@@ -53,7 +53,7 @@ function SETUP_GAME_MENU()
     end))
 
     table.insert(settingsButtons, NEW_BUTTON("BACK TO MENU", function()
-        
+
         SHOW_SETTINGS = false
 
     end))
@@ -78,7 +78,6 @@ function RENDER_GAME_MENU()
     if (not IS_GAME_PAUSED) then 
         DRAW_GAME_TUTORIAL() 
     end
-
 
     if (not SHOW_SETTINGS) then
 
