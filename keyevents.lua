@@ -61,7 +61,7 @@ function HANDLE_PLAYER_KEY_EVENTS(player, dt)
     
     if love.keyboard.isDown("s") or love.keyboard.isDown("down") then
 
-        player.y = player.y + PLAYER_MOVE_SPEED * dt
+        player.y = player.y + PLAYER_MOVE_SPEED * 0.75 * dt
 
     end
     

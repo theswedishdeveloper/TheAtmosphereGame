@@ -143,7 +143,7 @@ function HANDLE_OBSTACLE_COLLISIONS()
 
                 local difX = math.abs(OBSTACLES[i].x - OBSTACLES[ii].x)
 
-                local upForceSpeed = 15
+                local upForceSpeed = 10
 
                 -- If difX is less than 20 then, the other obstacle has probably hit the obstacle from the bottom side.
 
