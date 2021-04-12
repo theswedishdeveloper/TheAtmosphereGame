@@ -119,7 +119,7 @@ function love.draw()
                            OBSTACLE_SCALE_FACTOR * size,
                            OBSTACLES_TEXTURES[texture].width / 2,
                            OBSTACLES_TEXTURES[texture].height / 2)
-    end
+     end
 
     -- Reset colors
     RESET_SCREEN_COLORS()
@@ -129,11 +129,11 @@ function love.draw()
        
         love.graphics.setFont(FONT_BIG)
        
-        local gameOverText = "GAME OVER!"
+        local text = "GAME OVER!"
        
         love.graphics.print({
-            redColorRGB, (gameOverText)
-        }, love.graphics.getWidth() / 2 -FONT_BIG:getWidth(gameOverText) / 2,love.graphics.getHeight() / 7)
+            redColorRGB, (text)
+        }, love.graphics.getWidth() / 2 -FONT_BIG:getWidth(text) / 2,love.graphics.getHeight() / 7)
     
     elseif(IS_GAME_PAUSED) then 
         
@@ -150,15 +150,15 @@ function love.draw()
     end
 
     -- Draw player
-    local playerSize = PLAYER_SCALE_FACTOR
+    local playerScaleFactor = PLAYER_SCALE_FACTOR
 
     if (not PLAYER_LOOKING_LEFT) then 
-        playerSize = playerSize * -1 
+        playerScaleFactor = playerScaleFactor * -1 
     end
 
     if (not IS_GAME_MENU_VISIBLE or IS_GAME_PAUSED) then
-        love.graphics.draw(player.img, player.x, player.y, 0, playerSize, 
-        math.abs(playerSize), player.img:getWidth() / 2, player.img:getHeight() / 2)
+        love.graphics.draw(player.img, player.x, player.y, 0, playerScaleFactor, 
+        math.abs(playerScaleFactor), player.img:getWidth() / 2, player.img:getHeight() / 2)
     end
 
     -- Render the game menu
@@ -182,16 +182,16 @@ function love.update(dt)
     end
 
     -- This handles the smooth background scrolling behavior.
-    backgroundY = backgroundY + (not IS_GAME_MENU_VISIBLE and BACKGROUND_SPEED or BACKGROUND_SPEED_IDLE) * dt
+    backgroundY = backgroundY - (not IS_GAME_MENU_VISIBLE and BACKGROUND_SPEED or BACKGROUND_SPEED_IDLE) * dt
 
-    backgroundY2 = backgroundY2 + (not IS_GAME_MENU_VISIBLE and BACKGROUND_SPEED or BACKGROUND_SPEED_IDLE) * dt
+    backgroundY2 = backgroundY2 - (not IS_GAME_MENU_VISIBLE and BACKGROUND_SPEED or BACKGROUND_SPEED_IDLE) * dt
 
-    if (backgroundY >= backgroundImage:getHeight() * backgroundScaleFactor) then
+    if (backgroundY <= -backgroundImage:getHeight() * backgroundScaleFactor) then
         backgroundY = 0
     end
 
-    if (backgroundY2 >= 0) then
-        backgroundY2 = -backgroundImage:getHeight() * backgroundScaleFactor
+    if (backgroundY2 <= 0) then
+        backgroundY2 = backgroundImage:getHeight() * backgroundScaleFactor
     end
 
     -- check if have spawned required amount of obstacles
